@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
-import rpy2.robjects.packages as packages
-import rpy2.robjects.pandas2ri as pandas2ri
+from KorAPClient import KorAPClient
 import plotly.express as px
-pandas2ri.activate()
 
 QUERY = "Hello World"
 YEARS = range(2010, 2019)
 COUNTRIES = ["DE", "CH"]
 
-RKorAPClient = packages.importr('RKorAPClient')
-kcon = RKorAPClient.KorAPConnection(verbose=True)
+kcon = KorAPClient.KorAPConnection(verbose=True)
 
 vcs = ["textType=/Zeit.*/ & pubPlaceKey=" + c + " & pubDate in " + str(y) for c in COUNTRIES for y in YEARS]
-df = RKorAPClient.ipm(RKorAPClient.frequencyQuery(kcon, QUERY, vcs))
+df = KorAPClient.ipm(KorAPClient.frequencyQuery(kcon, QUERY, vcs))
 df['Year'] = [y for c in COUNTRIES for y in YEARS]
 df['Country'] = [c for c in COUNTRIES for y in YEARS]
 
