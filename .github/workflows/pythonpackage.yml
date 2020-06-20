@@ -16,7 +16,7 @@ jobs:
           - os: macOS-latest
             python-version: 3.7
           - os: macOS-latest
-            r-version: 3.6
+            r-version: 4.0
           - os: windows-latest
             python-version: 3.7
           - os: windows-latest
