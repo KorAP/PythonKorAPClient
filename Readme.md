@@ -1,7 +1,7 @@
 # KorAP web service client package for Python
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-![PythonKorAPClient CI unit test](https://github.com/KorAP/PythonKorAPClient/workflows/PythonKorAPClient%20CI%20unit%20test/badge.svg)
+[![CI check](https://github.com/KorAP/PythonKorAPClient/workflows/PythonKorAPClient%20CI%20unit%20test/badge.svg)](https://github.com/KorAP/PythonKorAPClient/actions?workflow=PythonKorAPClient%20CI%20unit%20test)
 [![Last commit](https://img.shields.io/github/last-commit/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub issues](https://img.shields.io/github/issues-closed-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
@@ -16,7 +16,7 @@ via [rpy2](https://rpy2.github.io/). **Please note that with a native implementa
 #### Linux
 ```shell script
 #### Debian / Ubuntu
-sudo apt install r-base r-base-dev libcurl4-gnutls-dev libssl-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
+sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
 Rscript -e "install.packages('RKorAPClient')"
 
 #### Fedora / CentOS / RHEL
@@ -91,4 +91,4 @@ as this software itself – be under the [BSD-2 License](LICENSE).
 
 - Kupietz, Marc / Margaretha, Eliza / Diewald, Nils / Lüngen, Harald / Fankhauser, Peter (2019): [What’s New in EuReCo? Interoperability, Comparable Corpora, Licensing](https://nbn-resolving.org/urn:nbn:de:bsz:mh39-90261). In: Bański, Piotr/Barbaresi, Adrien/Biber, Hanno/Breiteneder, Evelyn/Clematide, Simon/Kupietz, Marc/Lüngen, Harald/Iliadi, Caroline (eds.): [*Proceedings of the International Corpus Linguistics Conference 2019 Workshop "Challenges in the Management of Large Corpora (CMLC-7)"*](https://ids-pub.bsz-bw.de/solrsearch/index/search/searchtype/collection/id/21038), 22nd of July Mannheim: Leibniz-Institut für Deutsche Sprache, 33-39.
 
-- Kupietz, Marc / Diewald, Nils / Margaretha, Eliza (forthcoming): RKorAPClient: An R package for accessing the German Reference Corpus DeReKo via KorAP. In: Proceedings of the Twelfth International Conference on Language Resources and Evaluation (LREC 2020). Marseille/Paris: European Language Resources Association (ELRA). 
+- Kupietz, Marc / Diewald, Nils / Margaretha, Eliza (2020): [RKorAPClient: An R package for accessing the German Reference Corpus DeReKo via KorAP](http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.867.pdf). In: Calzolari, Nicoletta, Frédéric Béchet, Philippe Blache, Khalid Choukri, Christopher Cieri,  Thierry Declerck, Sara Goggi, Hitoshi Isahara, Bente Maegaard, Joseph Mariani, Hélène Mazo, Asuncion Moreno, Jan Odijk, Stelios Piperidis (eds.): [Proceedings of The 12th Language Resources and Evaluation Conference (LREC 2020)](http://www.lrec-conf.org/proceedings/lrec2020/LREC-2020.pdf). Marseille: European Language Resources Association (ELRA), 7017-7023.
