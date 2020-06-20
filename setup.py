@@ -11,7 +11,7 @@ setup(
     description="Client package to access KorAP's web service API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://korap.ids-mannheim.de",
+    url="https://www1.ids-mannheim.de/kl/projekte/korap.html",
     license="BSD",
     packages=find_packages(),
     classifiers=[
