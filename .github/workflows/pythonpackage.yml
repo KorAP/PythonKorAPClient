@@ -81,7 +81,12 @@ jobs:
     - name: Test with pytest on Windows
       if: runner.os == 'Windows'
       run: |
-        ./scripts/R_run.bat setup.py test
+        pip install pytest
+        pytest KorAPClient/tests  --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+      env:
+        R_HOME: "c:/R"
+        R_USER: "c:/R"
+        PATH: "${{ env.PATH }};C:/R/bin/x64;c:/R/bin/i386;c:/R;c:/R/bin"
     - name: Upload check results
       if: failure()
       uses: actions/upload-artifact@master
