@@ -55,13 +55,13 @@ jobs:
       uses: actions/cache@v1
       with:
         path: /usr/local/lib/R/site-library
-        key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('DESCRIPTION') }}
+        key: ${{ runner.os }}-r-${{ matrix.config.r-version }}-${{ hashFiles('DESCRIPTION') }}
       if: runner.os == 'Linux'
     - name: Cache R packages
       uses: actions/cache@v1
       with:
         path: ${{ env.R_LIBS_USER }}
-        key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('DESCRIPTION') }}
+        key: ${{ runner.os }}-r-${{ matrix.config.r-version }}-${{ hashFiles('DESCRIPTION') }}
       if: runner.os != 'Linux'
     - name: Install dependencies
       run: |
