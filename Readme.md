@@ -13,7 +13,7 @@ Currently, this is no native Python package. Internally, it uses [KorAP's client
 via [rpy2](https://rpy2.github.io/). **Please note that with a native implementation the API might change.**
 
 ## Installation
-##### 1. Install  R
+#### 1. Install  R
 From [CRAN](https://cran.r-project.org/bin/) or, alternatively, on some recent Linux distributions: 
 
 ```shell script
@@ -24,11 +24,11 @@ sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran
 sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
 ```
 
-###### 2. Install the R package
+#### 2. Install the R package
 ```
 Rscript -e "install.packages('RKorAPClient')"
 ```
-###### 3. Install the Python package
+#### 3. Install the Python package
 ```
 python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
 ```
