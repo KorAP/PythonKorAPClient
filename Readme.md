@@ -12,22 +12,23 @@ Python client package to access the [web service API](https://github.com/KorAP/K
 Currently, this is no native Python package. Internally, it uses [KorAP's client package for R](http://github.com/KorAP/RKorAPClient)
 via [rpy2](https://rpy2.github.io/). **Please note that with a native implementation the API might change.**
 
-## Installing Dependencies
-#### Linux
+## Installation
+##### 1. Install  R
+From [CRAN](https://cran.r-project.org/bin/) or, alternatively, on some recent Linux distributions: 
+
 ```shell script
 #### Debian / Ubuntu
 sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
-Rscript -e "install.packages('RKorAPClient')"
 
 #### Fedora / CentOS / RHEL
-sudo yum install r-base R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
+sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
+```
+
+###### 2. Install the R package
+```
 Rscript -e "install.packages('RKorAPClient')"
 ```
-#### Windows, MacOS and other Unix variants
-- install [R](https://cran.r-project.org/bin/)
-- install the RKorAP client as described in it's [installation section](https://github.com/KorAP/RKorAPClient#installation)
-
-## Installing the Package
+###### 3. Install the Python package
 ```
 python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
 ```
