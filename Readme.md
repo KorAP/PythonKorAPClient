@@ -13,7 +13,7 @@ Currently, this is no native Python package. Internally, it uses [KorAP's client
 via [rpy2](https://rpy2.github.io/). **Please note that with a native implementation the API might change.**
 
 ## Installation
-#### 1. Install  R
+#### 1. Install R (version >= 3.5)
 From [CRAN](https://cran.r-project.org/bin/) or, alternatively, on some recent Linux distributions: 
 
 ```shell script
