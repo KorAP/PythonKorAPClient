@@ -23,12 +23,18 @@ sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran
 #### Fedora / CentOS / RHEL
 sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
 ```
+#### 2. Windows only: Point environment variables to your R installation, e.g.:
+```
+set R_HOME="C:Program Files\R\R-4.0.2"
+set R_USER=%R_HOME%
+set PATH=%R_HOME%\bin;%R_HOME%\bin\x64;%PATH%
+```
 
-#### 2. Install the R package
+#### 3. Install the R package
 ```
 Rscript -e "install.packages('RKorAPClient')"
 ```
-#### 3. Install the Python package
+#### 4. Install the Python package
 ```
 python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
 ```
