@@ -23,7 +23,7 @@ setup(
     tests_require=['nose'],
     python_requires='>=3.6',
     install_requires=[
-        'rpy2',
+        'rpy2>=3.3',
         'plotly-express',
         'pandas',
         'markdown'
