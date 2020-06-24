@@ -32,7 +32,7 @@ set PATH=%R_HOME%\bin\x64;%PATH%
 
 #### 3. Install the R package
 ```
-Rscript -e "install.packages('RKorAPClient')"
+Rscript -e "install.packages('RKorAPClient', repos='https://cloud.r-project.org/')"
 ```
 #### 4. Install the Python package
 ```
