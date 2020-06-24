@@ -86,7 +86,7 @@ jobs:
       env:
         R_HOME: "c:/R"
         R_USER: "c:/R"
-        PATH: "${{ env.PATH }};C:/R/bin/x64;c:/R/bin/i386;c:/R;c:/R/bin"
+        PATH: "c:/R/bin/x64;${{ env.PATH }}"
     - name: Upload check results
       if: failure()
       uses: actions/upload-artifact@master
