@@ -43,21 +43,27 @@ python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
 Currently, there is no dedicated documentation for the Python variant of the library. Please refer to the [Refernce Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
 For translating the R syntax to Python and vice versa, pleas refer to the [rpy2 Documentation](https://rpy2.github.io/doc/latest/html/index.html).
 
+Please note that some arguments in the original RKorAPClient functions use characters that are not allowed in Python keyword argument names.
+For these cases, you can however use Python's `**kwargs` syntax.
+For example, to get the result of `corpusStats` as a `pandas.DataFrame`, and print the size of the whole corpus in tokens, you can write:
+```
+print(kcon.corpusStats(**{"as.df": True})['tokens'])
+```
 
 ## Examples
 #### Frequencies over years and countries
 ```python
-from KorAPClient import KorAPClient
+from KorAPClient import KorAPClient, KorAPConnection
 import plotly.express as px
 
 QUERY = "Hello World"
 YEARS = range(2010, 2019)
 COUNTRIES = ["DE", "CH"]
 
-kcon = KorAPClient.KorAPConnection(verbose=True)
+kcon = KorAPConnection(verbose=True)
 
 vcs = ["textType=/Zeit.*/ & pubPlaceKey=" + c + " & pubDate in " + str(y) for c in COUNTRIES for y in YEARS]
-df = KorAPClient.ipm(KorAPClient.frequencyQuery(kcon, QUERY, vcs))
+df = KorAPClient.ipm(kcon.frequencyQuery(QUERY, vcs))
 df['Year'] = [y for c in COUNTRIES for y in YEARS]
 df['Country'] = [c for c in COUNTRIES for y in YEARS]
 
