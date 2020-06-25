@@ -6,7 +6,9 @@
 [![GitHub closed issues](https://img.shields.io/github/issues-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub issues](https://img.shields.io/github/issues-closed-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 
-
+[![GitHub license](https://img.shields.io/github/license/KorAP/PythonKorAPClient)](https://github.com/KorAP/PythonKorAPClient/blob/master/LICENSE)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/KorAPClient)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/KorAPClient)
 ## Description
 Python client package to access the [web service API](https://github.com/KorAP/Kustvakt/wiki) of the [KorAP Corpus Analysis Platform](https://korap.ids-mannheim.de/) developed at [IDS Mannheim](http://www.ids-mannheim.de/).
 Currently, this is no native Python package. Internally, it uses [KorAP's client package for R](http://github.com/KorAP/RKorAPClient)
