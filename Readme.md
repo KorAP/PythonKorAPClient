@@ -46,12 +46,14 @@ For translating the R syntax to Python and vice versa, pleas refer to the [rpy2 
 Please note that some arguments in the original RKorAPClient functions use characters that are not allowed in Python keyword argument names.
 For these cases, you can however use Python's `**kwargs` syntax.
 For example, to get the result of `corpusStats` as a `pandas.DataFrame`, and print the size of the whole corpus in tokens, you can write:
-```
+```python
+from KorAPClient import KorAPConnection
+kcon = KorAPConnection(verbose=True)
 print(kcon.corpusStats(**{"as.df": True})['tokens'])
 ```
 
 ## Examples
-#### Frequencies over years and countries
+#### Frequencies of "Hello World" over years and countries
 ```python
 from KorAPClient import KorAPClient, KorAPConnection
 import plotly.express as px
