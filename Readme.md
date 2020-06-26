@@ -40,8 +40,9 @@ Rscript -e "install.packages('RKorAPClient', repos='https://cloud.r-project.org/
 python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
 ```
 ## Documentation
-Currently, there is no dedicated documentation for the Python variant of the library. Please refer to the [Refernce Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
-For translating the R syntax to Python and vice versa, pleas refer to the [rpy2 Documentation](https://rpy2.github.io/doc/latest/html/index.html).
+The core classes and methods to access the KorAP AP are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/html/KorAPClient/).
+For additional, mostly static helper functions, please refer to the [Refernce Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
+For translating R syntax to Python and vice versa, refer to the [rpy2 Documentation](https://rpy2.github.io/doc/latest/html/index.html).
 
 Please note that some arguments in the original RKorAPClient functions use characters that are not allowed in Python keyword argument names.
 For these cases, you can however use Python's `**kwargs` syntax.
@@ -49,7 +50,7 @@ For example, to get the result of `corpusStats` as a `pandas.DataFrame`, and pri
 ```python
 from KorAPClient import KorAPConnection
 kcon = KorAPConnection(verbose=True)
-print(kcon.corpusStats(**{"as.df": True})['tokens'])
+print(kcon.corpusStats(**{"as.df": True})['tokens'][0])
 ```
 
 ## Examples
