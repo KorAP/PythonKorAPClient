@@ -57,50 +57,88 @@ class KorAPConnection(RS4):
     def corpusStats(self, *args, **kwargs):
         &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-        Parameters
-        ----------
-        **kwargs :
-            vc = &#34;&#34;, verbose = kco@verbose, as.df = False
+            - vc = &#34;&#34;
+            - verbose = kco@verbose
+            - as.df = False
 
-        Returns
-        -------
-        DataFrame|RS4
+        Returns:
+            `DataFrame`|`RS4`
+
+        Example:
+            ```
+            $ df = kcon.corpusStats(&#34;pubDate in 2018 &amp; textType=/Zeit.*/ &amp; pubPlaceKey=IT&#34;, **{&#34;as.df&#34;: True})
+            $ df[&#34;tokens&#34;]
+            12150897
+            ```
         &#34;&#34;&#34;
         return KorAPClient.corpusStats(self, *args, **kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
 
-        - **query** – query string
-        - **vc** - virtual corpus definition
-        - **conf.level** – (default = 0.95)
-        - **as.alternatives** – (default = False)
-        - **KorAPUrl** – instead of providing the query and vc string parameters, you can use a copy your KorAP query URL here
+        - **query** – query string or list of query strings
+        - **vc** - virtual corpus definition or list thereof  (default: &#34;&#34;)
+        - **conf.level** – confidence level of the returned confidence interval (default = 0.95)
+        - **as.alternatives** – decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
+        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
-        - **accessRewriteFatal** – (default = `True`)
+        - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
+        - **accessRewriteFatal** – abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
         - **verbose** – (default = `self.verbose`)
-        - **expand**: – (default = `len(vc) != len(query)`)
+        - **expand** – bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
 
-        Returns
-        -------
-        DataFrame
+        Returns:
+            DataFrame with columns `&#39;query&#39;, &#39;totalResults&#39;, &#39;vc&#39;, &#39;webUIRequestUrl&#39;, &#39;total&#39;, &#39;f&#39;,
+           &#39;conf.low&#39;, &#39;conf.high&#39;`.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.frequencyQuery(&#34;Ameisenplage&#34;, vc=[&#34;pubDate in &#34;+str(y) for y in range(2010,2015)])
+                                  query  totalResults  ...      conf.low     conf.high
+            1  Ameisenplage             3  ...  9.727696e-10  1.200289e-08
+            2  Ameisenplage            12  ...  3.838218e-09  1.275717e-08
+            3  Ameisenplage             5  ...  2.013352e-09  1.356500e-08
+            4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
+            5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
+            ```
         &#34;&#34;&#34;
         return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
 
-        - **query** – query string
-        - **vc** - virtual corpus definition
-        - **KorAPUrl** – instead of providing the query and vc string parameters, you can copy your KorAP query URL here
+        - **query** – query string or list of query strings
+        - **vc** - virtual corpus definition or list thereof (default: &#34;&#34;)
+        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
+        - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
         - **fields** – (meta)data fields that will be fetched for every match (default = `[&#34;corpusSigle&#34;, &#34;textSigle&#34;, &#34;pubDate&#34;,  &#34;pubPlace&#34;, &#34;availability&#34;, &#34;textClass&#34;]`)
         - **verbose** – (default = `self.verbose`)
 
         Returns:
-            KorAPQuery|DataFrame
+            `KorAPQuery` | `pandas.DataFrame`
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ q = kcon.corpusQuery(&#34;Ameisenplage&#34;)
+            $ q = q.fetchAll()
+            $ q.slots[&#39;collectedMatches&#39;]
+                corpusSigle  ...                                          textClass
+            1         WPD17  ...                                                NaN
+            2         WPD17  ...                                                NaN
+            3         WPD17  ...                                                NaN
+            4         WPD17  ...                                                NaN
+            5         WPD17  ...                                                NaN
+            ..          ...  ...                                                ...
+            126         Z83  ...                       freizeit-unterhaltung reisen
+            127       MZE03  ...  freizeit-unterhaltung reisen natur-umwelt wett...
+            128       MZE03  ...  freizeit-unterhaltung reisen staat-gesellschaf...
+            129       MZE14  ...  wissenschaft populaerwissenschaft freizeit-unt...
+            130       MZE00  ...                  wissenschaft populaerwissenschaft
+            [130 rows x 6 columns]
+            ```
         &#34;&#34;&#34;
         return KorAPQuery(self, *args, **kwargs)
 
@@ -116,36 +154,35 @@ class KorAPQuery(RS4):
     def fetchNext(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch next couple of query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
+        - **offset** – start offset for query results to fetch
+        - **maxFetch** – maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
         &#34;&#34;&#34;
         return KorAPClient.fetchNext(self, *args, **kwargs)
 
     def fetchRest(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch remaining query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
         &#34;&#34;&#34;
         return KorAPClient.fetchRest(self, *args, **kwargs)
 
     def fetchAll(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch all query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
+
+        Example:
+            See `KorAPConnection.corpusQuery`.
         &#34;&#34;&#34;
         return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
 </details>
@@ -203,50 +240,88 @@ class KorAPQuery(RS4):
     def corpusStats(self, *args, **kwargs):
         &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-        Parameters
-        ----------
-        **kwargs :
-            vc = &#34;&#34;, verbose = kco@verbose, as.df = False
+            - vc = &#34;&#34;
+            - verbose = kco@verbose
+            - as.df = False
 
-        Returns
-        -------
-        DataFrame|RS4
+        Returns:
+            `DataFrame`|`RS4`
+
+        Example:
+            ```
+            $ df = kcon.corpusStats(&#34;pubDate in 2018 &amp; textType=/Zeit.*/ &amp; pubPlaceKey=IT&#34;, **{&#34;as.df&#34;: True})
+            $ df[&#34;tokens&#34;]
+            12150897
+            ```
         &#34;&#34;&#34;
         return KorAPClient.corpusStats(self, *args, **kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
 
-        - **query** – query string
-        - **vc** - virtual corpus definition
-        - **conf.level** – (default = 0.95)
-        - **as.alternatives** – (default = False)
-        - **KorAPUrl** – instead of providing the query and vc string parameters, you can use a copy your KorAP query URL here
+        - **query** – query string or list of query strings
+        - **vc** - virtual corpus definition or list thereof  (default: &#34;&#34;)
+        - **conf.level** – confidence level of the returned confidence interval (default = 0.95)
+        - **as.alternatives** – decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
+        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
-        - **accessRewriteFatal** – (default = `True`)
+        - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
+        - **accessRewriteFatal** – abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
         - **verbose** – (default = `self.verbose`)
-        - **expand**: – (default = `len(vc) != len(query)`)
+        - **expand** – bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
 
-        Returns
-        -------
-        DataFrame
+        Returns:
+            DataFrame with columns `&#39;query&#39;, &#39;totalResults&#39;, &#39;vc&#39;, &#39;webUIRequestUrl&#39;, &#39;total&#39;, &#39;f&#39;,
+           &#39;conf.low&#39;, &#39;conf.high&#39;`.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.frequencyQuery(&#34;Ameisenplage&#34;, vc=[&#34;pubDate in &#34;+str(y) for y in range(2010,2015)])
+                                  query  totalResults  ...      conf.low     conf.high
+            1  Ameisenplage             3  ...  9.727696e-10  1.200289e-08
+            2  Ameisenplage            12  ...  3.838218e-09  1.275717e-08
+            3  Ameisenplage             5  ...  2.013352e-09  1.356500e-08
+            4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
+            5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
+            ```
         &#34;&#34;&#34;
         return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
 
-        - **query** – query string
-        - **vc** - virtual corpus definition
-        - **KorAPUrl** – instead of providing the query and vc string parameters, you can copy your KorAP query URL here
+        - **query** – query string or list of query strings
+        - **vc** - virtual corpus definition or list thereof (default: &#34;&#34;)
+        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
+        - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
         - **fields** – (meta)data fields that will be fetched for every match (default = `[&#34;corpusSigle&#34;, &#34;textSigle&#34;, &#34;pubDate&#34;,  &#34;pubPlace&#34;, &#34;availability&#34;, &#34;textClass&#34;]`)
         - **verbose** – (default = `self.verbose`)
 
         Returns:
-            KorAPQuery|DataFrame
+            `KorAPQuery` | `pandas.DataFrame`
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ q = kcon.corpusQuery(&#34;Ameisenplage&#34;)
+            $ q = q.fetchAll()
+            $ q.slots[&#39;collectedMatches&#39;]
+                corpusSigle  ...                                          textClass
+            1         WPD17  ...                                                NaN
+            2         WPD17  ...                                                NaN
+            3         WPD17  ...                                                NaN
+            4         WPD17  ...                                                NaN
+            5         WPD17  ...                                                NaN
+            ..          ...  ...                                                ...
+            126         Z83  ...                       freizeit-unterhaltung reisen
+            127       MZE03  ...  freizeit-unterhaltung reisen natur-umwelt wett...
+            128       MZE03  ...  freizeit-unterhaltung reisen staat-gesellschaf...
+            129       MZE14  ...  wissenschaft populaerwissenschaft freizeit-unt...
+            130       MZE00  ...                  wissenschaft populaerwissenschaft
+            [130 rows x 6 columns]
+            ```
         &#34;&#34;&#34;
         return KorAPQuery(self, *args, **kwargs)</code></pre>
 </details>
@@ -266,20 +341,36 @@ class KorAPQuery(RS4):
 <dd>
 <div class="desc"><p>Query search term(s).</p>
 <ul>
-<li><strong>query</strong> – query string</li>
-<li><strong>vc</strong> - virtual corpus definition</li>
-<li><strong>KorAPUrl</strong> – instead of providing the query and vc string parameters, you can copy your KorAP query URL here</li>
+<li><strong>query</strong> – query string or list of query strings</li>
+<li><strong>vc</strong> - virtual corpus definition or list thereof (default: "")</li>
+<li><strong>KorAPUrl</strong> – instead of specifying the <code>query</code> and <code>vc</code> string parameters, you can copy your KorAP query URL here from the browser</li>
 <li><strong>metadataOnly</strong> – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)</li>
-<li><strong>ql</strong> – query language: <code>poliqarp|cosmas2|annis|cql|fcsql</code> (default = <code>"poliqarp"</code>)</li>
+<li><strong>ql</strong> – query language: <code>"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"</code> (default = <code>"poliqarp"</code>)</li>
 <li><strong>fields</strong> – (meta)data fields that will be fetched for every match (default = <code>["corpusSigle", "textSigle", "pubDate",
 "pubPlace", "availability", "textClass"]</code>)</li>
 <li><strong>verbose</strong> – (default = <code>self.verbose</code>)</li>
 </ul>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>KorAPQuery|DataFrame</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code> | <code>pandas.DataFrame</code></p>
+<h2 id="example">Example</h2>
+<pre><code>$ kcon = KorAPConnection(verbose=True)
+$ q = kcon.corpusQuery(&quot;Ameisenplage&quot;)
+$ q = q.fetchAll()
+$ q.slots['collectedMatches']
+    corpusSigle  ...                                          textClass
+1         WPD17  ...                                                NaN
+2         WPD17  ...                                                NaN
+3         WPD17  ...                                                NaN
+4         WPD17  ...                                                NaN
+5         WPD17  ...                                                NaN
+..          ...  ...                                                ...
+126         Z83  ...                       freizeit-unterhaltung reisen
+127       MZE03  ...  freizeit-unterhaltung reisen natur-umwelt wett...
+128       MZE03  ...  freizeit-unterhaltung reisen staat-gesellschaf...
+129       MZE14  ...  wissenschaft populaerwissenschaft freizeit-unt...
+130       MZE00  ...                  wissenschaft populaerwissenschaft
+[130 rows x 6 columns]
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -287,16 +378,37 @@ class KorAPQuery(RS4):
 <pre><code class="python">def corpusQuery(self, *args, **kwargs):
     &#34;&#34;&#34;Query search term(s).
 
-    - **query** – query string
-    - **vc** - virtual corpus definition
-    - **KorAPUrl** – instead of providing the query and vc string parameters, you can copy your KorAP query URL here
+    - **query** – query string or list of query strings
+    - **vc** - virtual corpus definition or list thereof (default: &#34;&#34;)
+    - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
     - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-    - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
+    - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
     - **fields** – (meta)data fields that will be fetched for every match (default = `[&#34;corpusSigle&#34;, &#34;textSigle&#34;, &#34;pubDate&#34;,  &#34;pubPlace&#34;, &#34;availability&#34;, &#34;textClass&#34;]`)
     - **verbose** – (default = `self.verbose`)
 
     Returns:
-        KorAPQuery|DataFrame
+        `KorAPQuery` | `pandas.DataFrame`
+
+    Example:
+        ```
+        $ kcon = KorAPConnection(verbose=True)
+        $ q = kcon.corpusQuery(&#34;Ameisenplage&#34;)
+        $ q = q.fetchAll()
+        $ q.slots[&#39;collectedMatches&#39;]
+            corpusSigle  ...                                          textClass
+        1         WPD17  ...                                                NaN
+        2         WPD17  ...                                                NaN
+        3         WPD17  ...                                                NaN
+        4         WPD17  ...                                                NaN
+        5         WPD17  ...                                                NaN
+        ..          ...  ...                                                ...
+        126         Z83  ...                       freizeit-unterhaltung reisen
+        127       MZE03  ...  freizeit-unterhaltung reisen natur-umwelt wett...
+        128       MZE03  ...  freizeit-unterhaltung reisen staat-gesellschaf...
+        129       MZE14  ...  wissenschaft populaerwissenschaft freizeit-unt...
+        130       MZE00  ...                  wissenschaft populaerwissenschaft
+        [130 rows x 6 columns]
+        ```
     &#34;&#34;&#34;
     return KorAPQuery(self, *args, **kwargs)</code></pre>
 </details>
@@ -306,14 +418,17 @@ class KorAPQuery(RS4):
 </code></dt>
 <dd>
 <div class="desc"><p>Query the size of the whole corpus or a virtual corpus specified by the vc argument.</p>
-<h2 id="parameters">Parameters</h2>
-<p>**kwargs :
-vc = "", verbose = kco@verbose, as.df = False</p>
+<pre><code>- vc = ""
+- verbose = kco@verbose
+- as.df = False
+</code></pre>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>DataFrame|RS4</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code>DataFrame</code>|<code>RS4</code></p>
+<h2 id="example">Example</h2>
+<pre><code>$ df = kcon.corpusStats(&quot;pubDate in 2018 &amp; textType=/Zeit.*/ &amp; pubPlaceKey=IT&quot;, **{&quot;as.df&quot;: True})
+$ df[&quot;tokens&quot;]
+12150897
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -321,14 +436,19 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <pre><code class="python">def corpusStats(self, *args, **kwargs):
     &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-    Parameters
-    ----------
-    **kwargs :
-        vc = &#34;&#34;, verbose = kco@verbose, as.df = False
+        - vc = &#34;&#34;
+        - verbose = kco@verbose
+        - as.df = False
 
-    Returns
-    -------
-    DataFrame|RS4
+    Returns:
+        `DataFrame`|`RS4`
+
+    Example:
+        ```
+        $ df = kcon.corpusStats(&#34;pubDate in 2018 &amp; textType=/Zeit.*/ &amp; pubPlaceKey=IT&#34;, **{&#34;as.df&#34;: True})
+        $ df[&#34;tokens&#34;]
+        12150897
+        ```
     &#34;&#34;&#34;
     return KorAPClient.corpusStats(self, *args, **kwargs)</code></pre>
 </details>
@@ -339,22 +459,31 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <dd>
 <div class="desc"><p>Query relative frequency of search term(s).</p>
 <ul>
-<li><strong>query</strong> – query string</li>
-<li><strong>vc</strong> - virtual corpus definition</li>
-<li><strong>conf.level</strong> – (default = 0.95)</li>
-<li><strong>as.alternatives</strong> – (default = False)</li>
-<li><strong>KorAPUrl</strong> – instead of providing the query and vc string parameters, you can use a copy your KorAP query URL here</li>
+<li><strong>query</strong> – query string or list of query strings</li>
+<li><strong>vc</strong> - virtual corpus definition or list thereof
+(default: "")</li>
+<li><strong>conf.level</strong> – confidence level of the returned confidence interval (default = 0.95)</li>
+<li><strong>as.alternatives</strong> – decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)</li>
+<li><strong>KorAPUrl</strong> – instead of specifying the <code>query</code> and <code>vc</code> string parameters, you can copy your KorAP query URL here from the browser</li>
 <li><strong>metadataOnly</strong> – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)</li>
-<li><strong>ql</strong> – query language: <code>poliqarp|cosmas2|annis|cql|fcsql</code> (default = <code>"poliqarp"</code>)</li>
-<li><strong>accessRewriteFatal</strong> – (default = <code>True</code>)</li>
+<li><strong>ql</strong> – query language: <code>"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"</code> (default = <code>"poliqarp"</code>)</li>
+<li><strong>accessRewriteFatal</strong> – abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = <code>True</code>)</li>
 <li><strong>verbose</strong> – (default = <code>self.verbose</code>)</li>
-<li><strong>expand</strong>: – (default = <code>len(vc) != len(query)</code>)</li>
+<li><strong>expand</strong> – bool that decides if <code>query</code> and <code>vc</code> parameters are expanded to all of their combinations (default = <code>len(vc) != len(query)</code>)</li>
 </ul>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code>DataFrame</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p>DataFrame with columns <code>'query', 'totalResults', 'vc', 'webUIRequestUrl', 'total', 'f',
+'conf.low', 'conf.high'</code>.</p>
+<h2 id="example">Example</h2>
+<pre><code>$ kcon = KorAPConnection(verbose=True)
+$ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(y) for y in range(2010,2015)])
+                      query  totalResults  ...      conf.low     conf.high
+1  Ameisenplage             3  ...  9.727696e-10  1.200289e-08
+2  Ameisenplage            12  ...  3.838218e-09  1.275717e-08
+3  Ameisenplage             5  ...  2.013352e-09  1.356500e-08
+4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
+5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -362,20 +491,32 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <pre><code class="python">def frequencyQuery(self, *args, **kwargs):
     &#34;&#34;&#34;Query relative frequency of search term(s).
 
-    - **query** – query string
-    - **vc** - virtual corpus definition
-    - **conf.level** – (default = 0.95)
-    - **as.alternatives** – (default = False)
-    - **KorAPUrl** – instead of providing the query and vc string parameters, you can use a copy your KorAP query URL here
+    - **query** – query string or list of query strings
+    - **vc** - virtual corpus definition or list thereof  (default: &#34;&#34;)
+    - **conf.level** – confidence level of the returned confidence interval (default = 0.95)
+    - **as.alternatives** – decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
+    - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
     - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-    - **ql** – query language: `poliqarp|cosmas2|annis|cql|fcsql` (default = `&#34;poliqarp&#34;`)
-    - **accessRewriteFatal** – (default = `True`)
+    - **ql** – query language: `&#34;poliqarp&#34; | &#34;cosmas2&#34; | &#34;annis&#34; | &#34;cql&#34; | &#34;fcsql&#34;` (default = `&#34;poliqarp&#34;`)
+    - **accessRewriteFatal** – abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
     - **verbose** – (default = `self.verbose`)
-    - **expand**: – (default = `len(vc) != len(query)`)
+    - **expand** – bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
 
-    Returns
-    -------
-    DataFrame
+    Returns:
+        DataFrame with columns `&#39;query&#39;, &#39;totalResults&#39;, &#39;vc&#39;, &#39;webUIRequestUrl&#39;, &#39;total&#39;, &#39;f&#39;,
+       &#39;conf.low&#39;, &#39;conf.high&#39;`.
+
+    Example:
+        ```
+        $ kcon = KorAPConnection(verbose=True)
+        $ kcon.frequencyQuery(&#34;Ameisenplage&#34;, vc=[&#34;pubDate in &#34;+str(y) for y in range(2010,2015)])
+                              query  totalResults  ...      conf.low     conf.high
+        1  Ameisenplage             3  ...  9.727696e-10  1.200289e-08
+        2  Ameisenplage            12  ...  3.838218e-09  1.275717e-08
+        3  Ameisenplage             5  ...  2.013352e-09  1.356500e-08
+        4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
+        5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
+        ```
     &#34;&#34;&#34;
     return KorAPClient.frequencyQuery(self, *args, **kwargs)</code></pre>
 </details>
@@ -403,36 +544,35 @@ vc = "", verbose = kco@verbose, as.df = False</p>
     def fetchNext(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch next couple of query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
+        - **offset** – start offset for query results to fetch
+        - **maxFetch** – maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
         &#34;&#34;&#34;
         return KorAPClient.fetchNext(self, *args, **kwargs)
 
     def fetchRest(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch remaining query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
         &#34;&#34;&#34;
         return KorAPClient.fetchRest(self, *args, **kwargs)
 
     def fetchAll(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch all query results
 
-        - **offset** start offset for query results to fetch
-        - **maxFetch** maximum number of query results to fetch
         - **verbose**
 
         Returns:
-            KorAPQuery
+            `KorAPQuery`
+
+        Example:
+            See `KorAPConnection.corpusQuery`.
         &#34;&#34;&#34;
         return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
 </details>
@@ -452,15 +592,12 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <dd>
 <div class="desc"><p>Fetch all query results</p>
 <ul>
-<li><strong>offset</strong> start offset for query results to fetch</li>
-<li><strong>maxFetch</strong> maximum number of query results to fetch</li>
 <li><strong>verbose</strong></li>
 </ul>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p>
+<h2 id="example">Example</h2>
+<p>See <code><a title="KorAPClient.KorAPConnection.corpusQuery" href="#KorAPClient.KorAPConnection.corpusQuery">KorAPConnection.corpusQuery()</a></code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -468,12 +605,13 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <pre><code class="python">def fetchAll(self, *args, **kwargs):
     &#34;&#34;&#34;Fetch all query results
 
-    - **offset** start offset for query results to fetch
-    - **maxFetch** maximum number of query results to fetch
     - **verbose**
 
     Returns:
-        KorAPQuery
+        `KorAPQuery`
+
+    Example:
+        See `KorAPConnection.corpusQuery`.
     &#34;&#34;&#34;
     return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
 </details>
@@ -484,15 +622,12 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <dd>
 <div class="desc"><p>Fetch next couple of query results</p>
 <ul>
-<li><strong>offset</strong> start offset for query results to fetch</li>
-<li><strong>maxFetch</strong> maximum number of query results to fetch</li>
+<li><strong>offset</strong> – start offset for query results to fetch</li>
+<li><strong>maxFetch</strong> – maximum number of query results to fetch</li>
 <li><strong>verbose</strong></li>
 </ul>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -500,12 +635,12 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <pre><code class="python">def fetchNext(self, *args, **kwargs):
     &#34;&#34;&#34;Fetch next couple of query results
 
-    - **offset** start offset for query results to fetch
-    - **maxFetch** maximum number of query results to fetch
+    - **offset** – start offset for query results to fetch
+    - **maxFetch** – maximum number of query results to fetch
     - **verbose**
 
     Returns:
-        KorAPQuery
+        `KorAPQuery`
     &#34;&#34;&#34;
     return KorAPClient.fetchNext(self, *args, **kwargs)</code></pre>
 </details>
@@ -516,15 +651,10 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <dd>
 <div class="desc"><p>Fetch remaining query results</p>
 <ul>
-<li><strong>offset</strong> start offset for query results to fetch</li>
-<li><strong>maxFetch</strong> maximum number of query results to fetch</li>
 <li><strong>verbose</strong></li>
 </ul>
 <h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
+<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -532,12 +662,10 @@ vc = "", verbose = kco@verbose, as.df = False</p>
 <pre><code class="python">def fetchRest(self, *args, **kwargs):
     &#34;&#34;&#34;Fetch remaining query results
 
-    - **offset** start offset for query results to fetch
-    - **maxFetch** maximum number of query results to fetch
     - **verbose**
 
     Returns:
-        KorAPQuery
+        `KorAPQuery`
     &#34;&#34;&#34;
     return KorAPClient.fetchRest(self, *args, **kwargs)</code></pre>
 </details>
