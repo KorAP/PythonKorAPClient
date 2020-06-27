@@ -87,6 +87,19 @@ jobs:
         R_HOME: "c:/R"
         R_USER: "c:/R"
         PATH: "c:/R/bin/x64;${{ env.PATH }}"
+    - name: Build documentation un Linux
+      if: runner.os == 'Linux'
+      run: |
+        pip install pdoc3
+        pdoc KorAPClient --force --html -o build/doc
+    - name: Deploy documentation on Linux
+      if: runner.os == 'Linux'
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: build/doc # The folder the action should deploy.
+        TARGET_FOLDER: doc
     - name: Upload check results
       if: failure()
       uses: actions/upload-artifact@master
