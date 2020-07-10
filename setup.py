@@ -24,6 +24,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
     ],
+    scripts=['bin/korapclient'],
     test_suite='nose.collector',
     tests_require=['nose'],
     python_requires='>=3.6',
