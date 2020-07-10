@@ -6,6 +6,7 @@
 [![GitHub closed issues](https://img.shields.io/github/issues-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub issues](https://img.shields.io/github/issues-closed-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub license](https://img.shields.io/github/license/KorAP/PythonKorAPClient)](https://github.com/KorAP/PythonKorAPClient/blob/master/LICENSE)
+[![HitCount](http://hits.dwyl.com/KorAP/PythonKorAPClient.svg)](http://hits.dwyl.com/KorAP/PythonKorAPClient)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/KorAPClient)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/KorAPClient)
 ## Description
@@ -76,6 +77,28 @@ fig.show()
 ```
 ![Frequency per million words of “Hello World“ in DE vs. AT from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)
 
+### Command Line Invocation
+The Python KorAP client can also be called from the command line.
+```shell script
+$ korapclient -h
+usage: python -m KorAPClient [-h] [-v] [-l QUERY_LANGUAGE] [-u API_URL] [-c VC [VC ...]] [-q QUERY [QUERY ...]]
+
+Send a query to the KorAP API and print results as tsv.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose
+  -l QUERY_LANGUAGE, --query-language QUERY_LANGUAGE
+  -u API_URL, --api-url API_URL
+                        Specify this to access a corpus other that DeReKo.
+  -c VC [VC ...], --vc VC [VC ...]
+                        virtual corpus definition[s]
+  -q QUERY [QUERY ...], --query QUERY [QUERY ...]
+                        If not specified only the size of the virtual corpus will be queried.
+
+example:
+  python -m KorAPClient -v --query "Hello World" "Hallo Welt" --vc "pubDate in 2017" "pubDate in 2018" "pubDate in 2019"
+```
 ### Accessed API Services
 By using the KorAPClient you agree to the respective terms of use of the accessed KorAP API services which will be printed upon opening a connection.
 
@@ -111,3 +134,4 @@ as this software itself – be under the [BSD-2 License](LICENSE).
 - Kupietz, Marc / Margaretha, Eliza / Diewald, Nils / Lüngen, Harald / Fankhauser, Peter (2019): [What’s New in EuReCo? Interoperability, Comparable Corpora, Licensing](https://nbn-resolving.org/urn:nbn:de:bsz:mh39-90261). In: Bański, Piotr/Barbaresi, Adrien/Biber, Hanno/Breiteneder, Evelyn/Clematide, Simon/Kupietz, Marc/Lüngen, Harald/Iliadi, Caroline (eds.): [*Proceedings of the International Corpus Linguistics Conference 2019 Workshop "Challenges in the Management of Large Corpora (CMLC-7)"*](https://ids-pub.bsz-bw.de/solrsearch/index/search/searchtype/collection/id/21038), 22nd of July Mannheim: Leibniz-Institut für Deutsche Sprache, 33-39.
 
 - Kupietz, Marc / Diewald, Nils / Margaretha, Eliza (2020): [RKorAPClient: An R package for accessing the German Reference Corpus DeReKo via KorAP](http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.867.pdf). In: Calzolari, Nicoletta, Frédéric Béchet, Philippe Blache, Khalid Choukri, Christopher Cieri,  Thierry Declerck, Sara Goggi, Hitoshi Isahara, Bente Maegaard, Joseph Mariani, Hélène Mazo, Asuncion Moreno, Jan Odijk, Stelios Piperidis (eds.): [Proceedings of The 12th Language Resources and Evaluation Conference (LREC 2020)](http://www.lrec-conf.org/proceedings/lrec2020/LREC-2020.pdf). Marseille: European Language Resources Association (ELRA), 7017-7023.
+
