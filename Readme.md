@@ -41,8 +41,8 @@ Rscript -e "install.packages('RKorAPClient', repos='https://cloud.r-project.org/
 python3 -m pip install KorAPClient
 ```
 ## Documentation
-The core classes and methods to access the KorAP AP are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/doc/KorAPClient/).
-For additional, mostly static helper functions, please refer to the [Refernce Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
+The core classes and methods to access the KorAP API are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/doc/KorAPClient/).
+For additional, mostly static helper functions, please refer to the [Reference Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
 For translating R syntax to Python and vice versa, refer to the [rpy2 Documentation](https://rpy2.github.io/doc/latest/html/index.html).
 
 Please note that some arguments in the original RKorAPClient functions use characters that are not allowed in Python keyword argument names.
