@@ -77,10 +77,10 @@ fig.show()
 ```
 ![Frequency per million words of “Hello World“ in DE vs. AT from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)
 
-### Command Line Invocation
-The Python KorAP client can also be called from the command line.
+## Command Line Invocation
+The Python KorAP client can also be called from the command line and shell scripts:
 ```shell script
-$ python3 -m KorAPClient -h
+$ korapclient -h
 usage: python -m KorAPClient [-h] [-v] [-l QUERY_LANGUAGE] [-u API_URL] [-c VC [VC ...]] [-q QUERY [QUERY ...]]
 
 Send a query to the KorAP API and print results as tsv.
