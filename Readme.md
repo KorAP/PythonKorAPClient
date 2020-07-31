@@ -1,6 +1,6 @@
 # KorAP web service client package for Python
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CI check](https://github.com/KorAP/PythonKorAPClient/workflows/PythonKorAPClient%20CI%20unit%20test/badge.svg)](https://github.com/KorAP/PythonKorAPClient/actions?workflow=PythonKorAPClient%20CI%20unit%20test)
 [![Last commit](https://img.shields.io/github/last-commit/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
@@ -38,7 +38,7 @@ Rscript -e "install.packages('RKorAPClient', repos='https://cloud.r-project.org/
 ```
 #### 4. Install the Python package
 ```
-python3 -m pip install git+https://github.com/KorAP/PythonKorAPClient
+python3 -m pip install KorAPClient
 ```
 ## Documentation
 The core classes and methods to access the KorAP AP are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/doc/KorAPClient/).
@@ -80,7 +80,7 @@ fig.show()
 ### Command Line Invocation
 The Python KorAP client can also be called from the command line.
 ```shell script
-$ korapclient -h
+$ python3 -m KorAPClient -h
 usage: python -m KorAPClient [-h] [-v] [-l QUERY_LANGUAGE] [-u API_URL] [-c VC [VC ...]] [-q QUERY [QUERY ...]]
 
 Send a query to the KorAP API and print results as tsv.
