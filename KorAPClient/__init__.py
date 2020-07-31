@@ -3,7 +3,6 @@ __pdoc__ = {'tests': False}
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
 from rpy2.robjects.methods import RS4
-from pandas import DataFrame
 
 KorAPClient = packages.importr('RKorAPClient')
 pandas2ri.activate()
