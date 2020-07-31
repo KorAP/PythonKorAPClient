@@ -1,4 +1,5 @@
-__pdoc__ = { 'tests': False }
+__pdoc__ = {'tests': False}
+
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
 from rpy2.robjects.methods import RS4
@@ -6,6 +7,7 @@ from pandas import DataFrame
 
 KorAPClient = packages.importr('RKorAPClient')
 pandas2ri.activate()
+
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -50,16 +52,16 @@ class KorAPConnection(RS4):
     def frequencyQuery(self, *args, **kwargs):
         """Query relative frequency of search term(s).
 
-        - **query** – query string or list of query strings
+        - **query** - query string or list of query strings
         - **vc** - virtual corpus definition or list thereof  (default: "")
-        - **conf.level** – confidence level of the returned confidence interval (default = 0.95)
-        - **as.alternatives** – decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
-        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
-        - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
-        - **accessRewriteFatal** – abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
-        - **verbose** – (default = `self.verbose`)
-        - **expand** – bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
+        - **conf.level** - confidence level of the returned confidence interval (default = 0.95)
+        - **as.alternatives** - decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
+        - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
+        - **metadataOnly** - determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
+        - **ql** - query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
+        - **accessRewriteFatal** - abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
+        - **verbose** - (default = `self.verbose`)
+        - **expand** - bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
 
         Returns:
             DataFrame with columns `'query', 'totalResults', 'vc', 'webUIRequestUrl', 'total', 'f',
@@ -82,13 +84,13 @@ class KorAPConnection(RS4):
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
 
-        - **query** – query string or list of query strings
+        - **query** - query string or list of query strings
         - **vc** - virtual corpus definition or list thereof (default: "")
-        - **KorAPUrl** – instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
-        - **metadataOnly** – determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
-        - **ql** – query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
-        - **fields** – (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass"]`)
-        - **verbose** – (default = `self.verbose`)
+        - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
+        - **metadataOnly** - determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
+        - **ql** - query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
+        - **fields** - (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass"]`)
+        - **verbose** - (default = `self.verbose`)
 
         Returns:
             `KorAPQuery` | `pandas.DataFrame`
@@ -120,7 +122,6 @@ class KorAPConnection(RS4):
 class KorAPQuery(RS4):
     """Query to a KorAP server."""
 
-
     def __init__(self, *args, **kwargs):
         kco = KorAPClient.corpusQuery(*args, **kwargs)
         super().__init__(kco)
@@ -128,8 +129,8 @@ class KorAPQuery(RS4):
     def fetchNext(self, *args, **kwargs):
         """Fetch next couple of query results
 
-        - **offset** – start offset for query results to fetch
-        - **maxFetch** – maximum number of query results to fetch
+        - **offset** - start offset for query results to fetch
+        - **maxFetch** - maximum number of query results to fetch
         - **verbose**
 
         Returns:
