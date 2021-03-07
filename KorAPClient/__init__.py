@@ -3,8 +3,15 @@ __pdoc__ = {'tests': False}
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
 from rpy2.robjects.methods import RS4
+from packaging import version
+import warnings
+
+CURRENT_R_PACKAGE_VERSION = "0.6.0"
 
 KorAPClient = packages.importr('RKorAPClient')
+if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
+    warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__  + " is outdated, please update.", DeprecationWarning)
+
 pandas2ri.activate()
 
 
@@ -79,6 +86,38 @@ class KorAPConnection(RS4):
             ```
         """
         return KorAPClient.frequencyQuery(self, *args, **kwargs)
+
+    def collocationScoreQuery(self, *args, **kwargs):
+        """Query relative frequency of search term(s).
+
+        - **query** - query string or list of query strings
+        - **vc** - virtual corpus definition or list thereof  (default: "")
+        - **conf.level** - confidence level of the returned confidence interval (default = 0.95)
+        - **as.alternatives** - decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
+        - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
+        - **metadataOnly** - determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
+        - **ql** - query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
+        - **accessRewriteFatal** - abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
+        - **verbose** - (default = `self.verbose`)
+        - **expand** - bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
+
+        Returns:
+            DataFrame with columns `'query', 'totalResults', 'vc', 'webUIRequestUrl', 'total', 'f',
+           'conf.low', 'conf.high'`.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.frequencyQuery("Ameisenplage", vc=["pubDate in "+str(y) for y in range(2010,2015)])
+                                  query  totalResults  ...      conf.low     conf.high
+            1  Ameisenplage             3  ...  9.727696e-10  1.200289e-08
+            2  Ameisenplage            12  ...  3.838218e-09  1.275717e-08
+            3  Ameisenplage             5  ...  2.013352e-09  1.356500e-08
+            4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
+            5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
+            ```
+        """
+        return KorAPClient.collocationScoreQuery(self, *args, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).

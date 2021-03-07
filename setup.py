@@ -5,7 +5,7 @@ with open("Readme.md", "r") as fh:
 
 setup(
     name="KorAPClient",
-    version="0.3.1",
+    version="0.6.0",
     author="Marc Kupietz",
     author_email="kupietz@ids-mannheim.de",
     description="Client package to access KorAP's web service API",
@@ -19,6 +19,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
