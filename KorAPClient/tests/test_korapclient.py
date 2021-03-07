@@ -15,6 +15,14 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['totalResults'][0], 10)
         self.assertGreater(10000, df['totalResults'][0])
 
+    def test_collocation_score_query(self):
+        df = self.kcon.collocationScoreQuery("Ameisenplage", "heimgesucht", leftContextSize=0, rightContextSize=1)
+        self.assertEquals(df['rightContextSize'][0], 1)
+        self.assertGreater(df['logDice'][0], 1)
+        self.assertGreater(df['pmi'][0], 10)
+        self.assertLess(df['pmi'][0], 20)
+
+
     def test_corpus_stats(self):
         df = self.kcon.corpusStats(**{"as.df": True})
         self.assertGreater(df['tokens'][0], 10**10)
