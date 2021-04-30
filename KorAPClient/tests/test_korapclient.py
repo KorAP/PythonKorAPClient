@@ -8,7 +8,7 @@ class TestKorAPClient(unittest.TestCase):
 
     def test_query(self):
         q = self.kcon.corpusQuery("Test")
-        self.assertEqual(q.slots['class'], 'KorAPQuery')
+        self.assertEqual(q.slots['class'][0], 'KorAPQuery')
 
     def test_frequency_query(self):
         df = self.kcon.frequencyQuery("Ameisenplage")
