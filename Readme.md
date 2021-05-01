@@ -12,7 +12,7 @@
 ## Description
 Python client wrapper package to access the [web service API](https://github.com/KorAP/Kustvakt/wiki) of the [KorAP Corpus Analysis Platform](https://korap.ids-mannheim.de/) developed at [IDS Mannheim](http://www.ids-mannheim.de/).
 Currently, this is no native Python package. Internally, it uses [KorAP's client package for R](http://github.com/KorAP/RKorAPClient)
-via [rpy2](https://rpy2.github.io/). The latter also automatically translates between R data frames (or [tibbles](https://tibble.tidyverse.org/)) and [pandas DataFrames](https://pandas.pydata.org/pandas-docs/stable/getting_started/dsintro.html#dataframe). 
+via [rpy2](https://rpy2.github.io/). The latter also automatically translates between R data frames (or [tibbles](https://tibble.tidyverse.org/)) and [pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html). 
 
 ## Installation
 #### 1. Install R (version >= 3.5)
