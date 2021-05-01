@@ -14,6 +14,8 @@ KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
     warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__  + " is outdated, please update.", DeprecationWarning)
 
+pandas2ri.activate()
+
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
     """Connection to a KorAP server."""
