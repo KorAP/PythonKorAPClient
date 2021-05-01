@@ -1,7 +1,9 @@
 __pdoc__ = {'tests': False}
 
 import rpy2.robjects.packages as packages
+from rpy2.robjects.conversion import localconverter
 import rpy2.robjects.pandas2ri as pandas2ri
+import rpy2.robjects as robjects
 from rpy2.robjects.methods import RS4
 from packaging import version
 import warnings
@@ -11,9 +13,6 @@ CURRENT_R_PACKAGE_VERSION = "0.6.1"
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
     warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__  + " is outdated, please update.", DeprecationWarning)
-
-pandas2ri.activate()
-
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -53,7 +52,8 @@ class KorAPConnection(RS4):
             12150897
             ```
         """
-        return KorAPClient.corpusStats(self, *args, **kwargs)
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            return KorAPClient.corpusStats(self, *args, **kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         """Query relative frequency of search term(s).
@@ -85,7 +85,8 @@ class KorAPConnection(RS4):
             5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
             ```
         """
-        return KorAPClient.frequencyQuery(self, *args, **kwargs)
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
 
     def collocationScoreQuery(self, *args, **kwargs):
         """Get collocation scores for given node(s) and collocate(s).
@@ -110,7 +111,8 @@ class KorAPConnection(RS4):
             $ df = kcon.collocationScoreQuery("Grund", "triftiger")
             ```
         """
-        return KorAPClient.collocationScoreQuery(self, *args, **kwargs)
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, *args, **kwargs))
 
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
