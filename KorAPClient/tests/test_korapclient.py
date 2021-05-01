@@ -17,7 +17,7 @@ class TestKorAPClient(unittest.TestCase):
 
     def test_collocation_score_query(self):
         df = self.kcon.collocationScoreQuery("Ameisenplage", "heimgesucht", leftContextSize=0, rightContextSize=1)
-        self.assertEquals(df['rightContextSize'][0], 1)
+        self.assertEqual(df['rightContextSize'][0], 1)
         self.assertGreater(df['logDice'][0], 1)
         self.assertGreater(df['pmi'][0], 10)
         self.assertLess(df['pmi'][0], 20)
