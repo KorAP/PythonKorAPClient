@@ -33,7 +33,7 @@ setup(
         'rpy2>=3.3',
         'plotly',
         'plotly-express',
-        'pandas',
+        'pandas>=1.2',
         'markdown'
     ]
 )
