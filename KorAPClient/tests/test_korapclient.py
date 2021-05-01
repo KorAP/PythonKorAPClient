@@ -22,6 +22,9 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['pmi'][0], 10)
         self.assertLess(df['pmi'][0], 20)
 
+    @unittest.skip("Conversion error in rpy2py")
+    def test_collocation_score_query_multi_collocates(self):
+        df = self.kcon.collocationScoreQuery("Ameisenplage", ["einer", "heimgesucht"], leftContextSize=1, rightContextSize=1)
 
     def test_corpus_stats(self):
         df = self.kcon.corpusStats(**{"as.df": True})
