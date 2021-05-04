@@ -90,7 +90,7 @@ class KorAPConnection(RS4):
         with localconverter(robjects.default_converter + pandas2ri.converter):
             return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
 
-    def collocationScoreQuery(self, *args, **kwargs):
+    def collocationScoreQuery(self, node, collocate, vc="", **kwargs):
         """Get collocation scores for given node(s) and collocate(s).
 
         - **node** - target word
@@ -114,7 +114,14 @@ class KorAPConnection(RS4):
             ```
         """
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, *args, **kwargs))
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(collocate) is list:
+                collocate = robjects.StrVector(collocate)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).

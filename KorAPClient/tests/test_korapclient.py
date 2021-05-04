@@ -1,7 +1,6 @@
 import unittest
 from KorAPClient import KorAPConnection
 
-
 class TestKorAPClient(unittest.TestCase):
     def setUp(self):
         self.kcon = KorAPConnection(verbose=True)
@@ -22,9 +21,10 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['pmi'][0], 10)
         self.assertLess(df['pmi'][0], 20)
 
-    @unittest.skip("Conversion error in rpy2py")
     def test_collocation_score_query_multi_collocates(self):
         df = self.kcon.collocationScoreQuery("Ameisenplage", ["einer", "heimgesucht"], leftContextSize=1, rightContextSize=1)
+        self.assertEqual(df['collocate'][1], 'heimgesucht')
+        self.assertGreater(df['pmi'][1], df['pmi'][0])
 
     def test_corpus_stats(self):
         df = self.kcon.corpusStats(**{"as.df": True})
@@ -35,6 +35,9 @@ class TestKorAPClient(unittest.TestCase):
         ch_tokens = self.kcon.corpusStats(vc='pubPlaceKey="CH"', **{"as.df": True})['tokens'][0]
         self.assertGreater(de_tokens, ch_tokens)
 
+    def test_corpus_stats_with_vc(self):
+        tokens = self.kcon.corpusStats(vc=['pubPlaceKey="DE"', 'pubPlaceKey="CH"'], **{"as.df": True})['tokens']
+        self.assertGreater(tokens[0], tokens[1])
 
 if __name__ == '__main__':
     unittest.main()
