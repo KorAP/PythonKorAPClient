@@ -128,8 +128,8 @@ class KorAPConnection(RS4):
         - **lemmatizeCollocateQuery** - logical, set to TRUE if collocate query should be lemmatized, i.e. x -&gt; [tt/l=x]
         - **leftContextSize** - size of the left context window
         - **rightContextSize** - size of the right context window
-        - **scoreFunctions** - named list of score functions of the form function(O1, O2, O, N, E, window_size), see e.g. pmi
-        - smoothingConstant - smoothing constant will be added to all observed values
+        - **scoreFunctions** - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
+        - **smoothingConstant** - smoothing constant will be added to all observed values
 
         Returns:
             DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
@@ -345,8 +345,8 @@ class KorAPQuery(RS4):
         - **lemmatizeCollocateQuery** - logical, set to TRUE if collocate query should be lemmatized, i.e. x -&gt; [tt/l=x]
         - **leftContextSize** - size of the left context window
         - **rightContextSize** - size of the right context window
-        - **scoreFunctions** - named list of score functions of the form function(O1, O2, O, N, E, window_size), see e.g. pmi
-        - smoothingConstant - smoothing constant will be added to all observed values
+        - **scoreFunctions** - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
+        - **smoothingConstant** - smoothing constant will be added to all observed values
 
         Returns:
             DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
@@ -429,8 +429,8 @@ class KorAPQuery(RS4):
 <li><strong>lemmatizeCollocateQuery</strong> - logical, set to TRUE if collocate query should be lemmatized, i.e. x -&gt; [tt/l=x]</li>
 <li><strong>leftContextSize</strong> - size of the left context window</li>
 <li><strong>rightContextSize</strong> - size of the right context window</li>
-<li><strong>scoreFunctions</strong> - named list of score functions of the form function(O1, O2, O, N, E, window_size), see e.g. pmi</li>
-<li>smoothingConstant - smoothing constant will be added to all observed values</li>
+<li><strong>scoreFunctions</strong> - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi</li>
+<li><strong>smoothingConstant</strong> - smoothing constant will be added to all observed values</li>
 </ul>
 <h2 id="returns">Returns</h2>
 <p>DataFrame with columns <code>'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',
@@ -454,8 +454,8 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
     - **lemmatizeCollocateQuery** - logical, set to TRUE if collocate query should be lemmatized, i.e. x -&gt; [tt/l=x]
     - **leftContextSize** - size of the left context window
     - **rightContextSize** - size of the right context window
-    - **scoreFunctions** - named list of score functions of the form function(O1, O2, O, N, E, window_size), see e.g. pmi
-    - smoothingConstant - smoothing constant will be added to all observed values
+    - **scoreFunctions** - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
+    - **smoothingConstant** - smoothing constant will be added to all observed values
 
     Returns:
         DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
