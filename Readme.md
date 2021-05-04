@@ -6,7 +6,6 @@
 [![GitHub closed issues](https://img.shields.io/github/issues-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub issues](https://img.shields.io/github/issues-closed-raw/KorAP/PythonKorAPClient.svg)](https://github.com/KorAP/PythonKorAPClient/issues)
 [![GitHub license](https://img.shields.io/github/license/KorAP/PythonKorAPClient)](https://github.com/KorAP/PythonKorAPClient/blob/master/LICENSE)
-[![HitCount](http://hits.dwyl.com/KorAP/PythonKorAPClient.svg)](http://hits.dwyl.com/KorAP/PythonKorAPClient)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/KorAPClient)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/KorAPClient)
 ## Description
@@ -106,7 +105,7 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 **Author**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/)
 
-Copyright (c) 2020, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
+Copyright (c) 2021, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
 This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Leibniz Institute for German Language
