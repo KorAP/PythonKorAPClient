@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9415cfc6_60f105e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2021-05-04T18:49:25Z",
+      "side": 1,
+      "message": "Danke, das Beispiel ist sehr schön.",
+      "revId": "240ff89693aba892405e75622782c18d68fbd084",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
