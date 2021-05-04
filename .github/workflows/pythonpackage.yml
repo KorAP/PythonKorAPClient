@@ -45,14 +45,14 @@ jobs:
       uses: r-lib/actions/setup-r@master
       with:
         r-version: ${{ matrix.r-version }}
-      if: runner.os != 'LinuxDisabled'
+      if: runner.os != 'Linux'
     - name: Set up package maintainers R on Linux
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
+        sudo apt-get install -y libsodium-dev libxml2-dev libcurl4-openssl-dev
         sudo chown $USER /usr/local/lib/R/site-library
         export R_LIBS_USER=/usr/local/lib/R/site-library
-      if: runner.os == 'LinuxDisabled'
+      if: runner.os == 'Linux'
     - name: Install R dependencies
       run: Rscript -e "install.packages('RKorAPClient')"
     - name: Cache R packages on Linux
