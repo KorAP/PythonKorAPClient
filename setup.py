@@ -34,6 +34,7 @@ setup(
         'plotly',
         'plotly-express',
         'pandas>=1.2',
+        'packaging',
         'markdown'
     ]
 )
