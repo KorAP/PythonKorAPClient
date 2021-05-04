@@ -100,8 +100,8 @@ class KorAPConnection(RS4):
         - **lemmatizeCollocateQuery** - logical, set to TRUE if collocate query should be lemmatized, i.e. x -> [tt/l=x]
         - **leftContextSize** - size of the left context window
         - **rightContextSize** - size of the right context window
-        - **scoreFunctions** - named list of score functions of the form function(O1, O2, O, N, E, window_size), see e.g. pmi
-        - smoothingConstant - smoothing constant will be added to all observed values
+        - **scoreFunctions** - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
+        - **smoothingConstant** - smoothing constant will be added to all observed values
 
         Returns:
             DataFrame with columns `'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',  'leftContextSize',
