@@ -118,7 +118,7 @@ class KorAPConnection(RS4):
         with localconverter(robjects.default_converter + pandas2ri.converter):
             return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
 
-    def collocationScoreQuery(self, *args, **kwargs):
+    def collocationScoreQuery(self, node, collocate, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34;Get collocation scores for given node(s) and collocate(s).
 
         - **node** - target word
@@ -142,7 +142,14 @@ class KorAPConnection(RS4):
             ```
         &#34;&#34;&#34;
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, *args, **kwargs))
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(collocate) is list:
+                collocate = robjects.StrVector(collocate)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
@@ -328,7 +335,7 @@ class KorAPQuery(RS4):
         with localconverter(robjects.default_converter + pandas2ri.converter):
             return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
 
-    def collocationScoreQuery(self, *args, **kwargs):
+    def collocationScoreQuery(self, node, collocate, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34;Get collocation scores for given node(s) and collocate(s).
 
         - **node** - target word
@@ -352,7 +359,14 @@ class KorAPQuery(RS4):
             ```
         &#34;&#34;&#34;
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, *args, **kwargs))
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(collocate) is list:
+                collocate = robjects.StrVector(collocate)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
@@ -402,7 +416,7 @@ class KorAPQuery(RS4):
 <h3>Methods</h3>
 <dl>
 <dt id="KorAPClient.KorAPConnection.collocationScoreQuery"><code class="name flex">
-<span>def <span class="ident">collocationScoreQuery</span></span>(<span>self, *args, **kwargs)</span>
+<span>def <span class="ident">collocationScoreQuery</span></span>(<span>self, node, collocate, vc='', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get collocation scores for given node(s) and collocate(s).</p>
@@ -430,7 +444,7 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def collocationScoreQuery(self, *args, **kwargs):
+<pre><code class="python">def collocationScoreQuery(self, node, collocate, vc=&#34;&#34;, **kwargs):
     &#34;&#34;&#34;Get collocation scores for given node(s) and collocate(s).
 
     - **node** - target word
@@ -454,7 +468,14 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
         ```
     &#34;&#34;&#34;
     with localconverter(robjects.default_converter + pandas2ri.converter):
-        return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, *args, **kwargs))</code></pre>
+        if type(node) is list:
+            node = robjects.StrVector(node)
+        if type(collocate) is list:
+            collocate = robjects.StrVector(collocate)
+        if type(vc) is list:
+            vc = robjects.StrVector(vc)
+
+        return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPConnection.corpusQuery"><code class="name flex">
