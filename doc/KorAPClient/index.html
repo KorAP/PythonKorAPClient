@@ -36,7 +36,7 @@ from rpy2.robjects.methods import RS4
 from packaging import version
 import warnings
 
-CURRENT_R_PACKAGE_VERSION = &#34;0.6.1&#34;
+CURRENT_R_PACKAGE_VERSION = &#34;0.6.1.9000&#34;
 
 KorAPClient = packages.importr(&#39;RKorAPClient&#39;)
 if version.parse(KorAPClient.__version__) &lt; version.parse(CURRENT_R_PACKAGE_VERSION):
