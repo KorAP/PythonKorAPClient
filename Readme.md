@@ -65,13 +65,16 @@ COUNTRIES = ["DE", "CH"]
 
 kcon = KorAPConnection(verbose=True)
 
-vcs = ["textType=/Zeit.*/ & pubPlaceKey=" + c + " & pubDate in " + str(y) for c in COUNTRIES for y in YEARS]
+vcs = [f"textType=/Zeit.*/ & pubPlaceKey={c} & pubDate in {y}" for c in COUNTRIES for y in YEARS]
 df = KorAPClient.ipm(kcon.frequencyQuery(QUERY, vcs))
+
 df['Year'] = [y for c in COUNTRIES for y in YEARS]
 df['Country'] = [c for c in COUNTRIES for y in YEARS]
+df['error_y'] = df["conf.high"] - df["ipm"]
+df['error_y_minus'] = df["ipm"] - df["conf.low"]
 
 fig = px.line(df, title=QUERY, x="Year", y="ipm", color="Country",
-              error_y="conf.high", error_y_minus="conf.low")
+              error_y="error_y", error_y_minus="error_y_minus")
 fig.show()
 ```
 ![Frequency per million words of “Hello World“ in DE vs. AT from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)
