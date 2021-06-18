@@ -14,7 +14,8 @@ print(df)
 
 df['Year'] = [y for c in COUNTRIES for y in YEARS]
 df['Country'] = [c for c in COUNTRIES for y in YEARS]
+df['error_y'] = df["conf.high"] - df["ipm"]
+df['error_y_minus'] = df["ipm"] - df["conf.low"]
 
-fig = px.line(df, title=QUERY, x="Year", y="ipm", color="Country",
-              error_y="conf.high", error_y_minus="conf.low")
+fig = px.line(df, title=QUERY, x="Year", y="ipm", color="Country", error_y="error_y")
 fig.show()
