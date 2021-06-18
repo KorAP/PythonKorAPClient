@@ -133,7 +133,7 @@ class KorAPConnection(RS4):
 
         Returns:
             DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
-               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39; `
+               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
 
         Example:
             ```
@@ -350,7 +350,7 @@ class KorAPQuery(RS4):
 
         Returns:
             DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
-               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39; `
+               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
 
         Example:
             ```
@@ -435,7 +435,7 @@ class KorAPQuery(RS4):
 <h2 id="returns">Returns</h2>
 <p>DataFrame with columns <code>'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',
 'leftContextSize',
-'rightContextSize', 'N', 'O', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice'</code></p>
+'rightContextSize', 'N', 'O', 'O1', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice', 'll'</code></p>
 <h2 id="example">Example</h2>
 <pre><code>$ kcon = KorAPConnection(verbose=True)
 $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
@@ -459,7 +459,7 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
 
     Returns:
         DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
-           &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39; `
+           &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
 
     Example:
         ```
