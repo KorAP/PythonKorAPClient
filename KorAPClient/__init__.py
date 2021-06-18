@@ -105,7 +105,7 @@ class KorAPConnection(RS4):
 
         Returns:
             DataFrame with columns `'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',  'leftContextSize',
-               'rightContextSize', 'N', 'O', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice' `
+               'rightContextSize', 'N', 'O', 'O1', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice', 'll'`
 
         Example:
             ```
