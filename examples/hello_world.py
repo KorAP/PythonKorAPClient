@@ -8,7 +8,7 @@ COUNTRIES = ["DE", "CH"]
 
 kcon = KorAPConnection(verbose=True)
 
-vcs = ["textType=/Zeit.*/ & pubPlaceKey=" + c + " & pubDate in " + str(y) for c in COUNTRIES for y in YEARS]
+vcs = [f"textType=/Zeit.*/ & pubPlaceKey={c} & pubDate in {y}" for c in COUNTRIES for y in YEARS]
 df = KorAPClient.ipm(kcon.frequencyQuery(QUERY, vcs))
 print(df)
 
