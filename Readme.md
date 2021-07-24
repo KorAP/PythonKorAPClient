@@ -19,7 +19,7 @@ From [CRAN](https://cran.r-project.org/bin/) or, alternatively, on some recent L
 
 ```shell script
 #### Debian / Ubuntu
-sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
+sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libfontconfig1-dev libsecret-1-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
 
 #### Fedora / CentOS / RHEL
 sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
