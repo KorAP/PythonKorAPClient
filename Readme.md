@@ -143,7 +143,7 @@ This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Leibniz Institute for German Language
 ([IDS](http://www.ids-mannheim.de/)).
 
-It is published under the [BSD-2 License](LICENSE).
+It is published under the [BSD-2 License](LICENSE.txt).
 
 **To cite this work, …**<br>
 please refer to: Kupietz et al. (2020), below.
@@ -158,7 +158,7 @@ via GitHub.
 
 Please note that unless you explicitly state otherwise any
 contribution intentionally submitted for inclusion into this software shall –
-as this software itself – be under the [BSD-2 License](LICENSE).
+as this software itself – be under the [BSD-2 License](LICENSE.txt).
 
 ## References
 
