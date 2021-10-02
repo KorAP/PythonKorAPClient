@@ -10,21 +10,9 @@ jobs:
       max-parallel: 4
       fail-fast: false
       matrix:
-        python-version: [3.9, 3.8]
-        r-version: [3.6, release]
+        python-version: [3.9]
+        r-version: [release]
         os: [windows-latest, macOS-latest, ubuntu-latest]
-        exclude:
-          - os: macOS-latest
-            python-version: 3.8
-          - os: macOS-latest
-            r-version: 3.6
-          - os: windows-latest
-            python-version: 3.9
-          - os: windows-latest
-            r-version: release
-          - os: ubuntu-latest
-            r-version: 3.6
-            python-version: 3.9
     steps:
     - uses: actions/checkout@v2.3.4
     - name: Set up Python ${{ matrix.python-version }}
