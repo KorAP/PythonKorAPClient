@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>KorAPClient API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -28,15 +28,16 @@
 </summary>
 <pre><code class="python">__pdoc__ = {&#39;tests&#39;: False}
 
-import rpy2.robjects.packages as packages
-from rpy2.robjects.conversion import localconverter
-import rpy2.robjects.pandas2ri as pandas2ri
-import rpy2.robjects as robjects
-from rpy2.robjects.methods import RS4
-from packaging import version
 import warnings
 
-CURRENT_R_PACKAGE_VERSION = &#34;0.6.1.9000&#34;
+import rpy2.robjects as robjects
+import rpy2.robjects.packages as packages
+import rpy2.robjects.pandas2ri as pandas2ri
+from packaging import version
+from rpy2.robjects.conversion import localconverter
+from rpy2.robjects.methods import RS4
+
+CURRENT_R_PACKAGE_VERSION = &#34;0.7.1&#34;
 
 KorAPClient = packages.importr(&#39;RKorAPClient&#39;)
 if version.parse(KorAPClient.__version__) &lt; version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -151,6 +152,47 @@ class KorAPConnection(RS4):
 
             return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
+    def collocationAnalysis(self, node, vc=&#34;&#34;, **kwargs):
+        &#34;&#34;&#34; **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
+
+        - **node** - target word or list of target words
+        - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
+        - **lemmatizeNodeQuery** - if True, node query will be lemmatized, i.e. x -&gt; [tt/l=x]
+        - **minOccur** - minimum absolute number of observed co-occurrences to consider a collocate candidate
+        - **leftContextSize** - size of the left context window
+        - **rightContextSize** - size of the right context window
+        - **topCollocatesLimit** - limit analysis to the n most frequent collocates in the search hits sample
+        - **searchHitsSampleLimit** - limit the size of the search hits sample
+        - **ignoreCollocateCase** - bool, set to True if collocate case should be ignored
+        - **withinSpan** - KorAP span specification for collocations to be searched within
+        - **exactFrequencies** - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies
+        - **stopwords** - vector of stopwords not to be considered as collocates
+        - **seed** - seed for random page collecting order
+        - **expand** - if True, node and vc parameters are expanded to all of their combinations
+
+        Returns:
+            DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
+               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
+
+        Details:
+            The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+            To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
+            Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
+            ```
+        &#34;&#34;&#34;
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
 
@@ -202,6 +244,7 @@ class KorAPQuery(RS4):
         - **offset** - start offset for query results to fetch
         - **maxFetch** - maximum number of query results to fetch
         - **verbose**
+        - **randomizePageOrder** - fetch result pages in pseudo random order if true. (default = `False`)
 
         Returns:
             `KorAPQuery`
@@ -368,6 +411,47 @@ class KorAPQuery(RS4):
 
             return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
+    def collocationAnalysis(self, node, vc=&#34;&#34;, **kwargs):
+        &#34;&#34;&#34; **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
+
+        - **node** - target word or list of target words
+        - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
+        - **lemmatizeNodeQuery** - if True, node query will be lemmatized, i.e. x -&gt; [tt/l=x]
+        - **minOccur** - minimum absolute number of observed co-occurrences to consider a collocate candidate
+        - **leftContextSize** - size of the left context window
+        - **rightContextSize** - size of the right context window
+        - **topCollocatesLimit** - limit analysis to the n most frequent collocates in the search hits sample
+        - **searchHitsSampleLimit** - limit the size of the search hits sample
+        - **ignoreCollocateCase** - bool, set to True if collocate case should be ignored
+        - **withinSpan** - KorAP span specification for collocations to be searched within
+        - **exactFrequencies** - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies
+        - **stopwords** - vector of stopwords not to be considered as collocates
+        - **seed** - seed for random page collecting order
+        - **expand** - if True, node and vc parameters are expanded to all of their combinations
+
+        Returns:
+            DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
+               &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
+
+        Details:
+            The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+            To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
+            Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
+            ```
+        &#34;&#34;&#34;
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
 
@@ -415,6 +499,85 @@ class KorAPQuery(RS4):
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="KorAPClient.KorAPConnection.collocationAnalysis"><code class="name flex">
+<span>def <span class="ident">collocationAnalysis</span></span>(<span>self, node, vc='', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><strong>EXPERIMENTAL</strong>: Performs a collocation analysis for the given node (or query) in the given virtual corpus.</p>
+<ul>
+<li><strong>node</strong> - target word or list of target words</li>
+<li><strong>vc</strong> - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.</li>
+<li><strong>lemmatizeNodeQuery</strong> - if True, node query will be lemmatized, i.e. x -&gt; [tt/l=x]</li>
+<li><strong>minOccur</strong> - minimum absolute number of observed co-occurrences to consider a collocate candidate</li>
+<li><strong>leftContextSize</strong> - size of the left context window</li>
+<li><strong>rightContextSize</strong> - size of the right context window</li>
+<li><strong>topCollocatesLimit</strong> - limit analysis to the n most frequent collocates in the search hits sample</li>
+<li><strong>searchHitsSampleLimit</strong> - limit the size of the search hits sample</li>
+<li><strong>ignoreCollocateCase</strong> - bool, set to True if collocate case should be ignored</li>
+<li><strong>withinSpan</strong> - KorAP span specification for collocations to be searched within</li>
+<li><strong>exactFrequencies</strong> - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies</li>
+<li><strong>stopwords</strong> - vector of stopwords not to be considered as collocates</li>
+<li><strong>seed</strong> - seed for random page collecting order</li>
+<li><strong>expand</strong> - if True, node and vc parameters are expanded to all of their combinations</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with columns <code>'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',
+'leftContextSize',
+'rightContextSize', 'N', 'O', 'O1', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice', 'll'</code></p>
+<h2 id="details">Details</h2>
+<p>The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
+Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.</p>
+<h2 id="example">Example</h2>
+<pre><code>$ kcon = KorAPConnection(verbose=True)
+$ df = kcon.collocationAnalysis(&quot;Grund&quot;)
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collocationAnalysis(self, node, vc=&#34;&#34;, **kwargs):
+    &#34;&#34;&#34; **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
+
+    - **node** - target word or list of target words
+    - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
+    - **lemmatizeNodeQuery** - if True, node query will be lemmatized, i.e. x -&gt; [tt/l=x]
+    - **minOccur** - minimum absolute number of observed co-occurrences to consider a collocate candidate
+    - **leftContextSize** - size of the left context window
+    - **rightContextSize** - size of the right context window
+    - **topCollocatesLimit** - limit analysis to the n most frequent collocates in the search hits sample
+    - **searchHitsSampleLimit** - limit the size of the search hits sample
+    - **ignoreCollocateCase** - bool, set to True if collocate case should be ignored
+    - **withinSpan** - KorAP span specification for collocations to be searched within
+    - **exactFrequencies** - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies
+    - **stopwords** - vector of stopwords not to be considered as collocates
+    - **seed** - seed for random page collecting order
+    - **expand** - if True, node and vc parameters are expanded to all of their combinations
+
+    Returns:
+        DataFrame with columns `&#39;node&#39;, &#39;collocate&#39;, &#39;label&#39;, &#39;vc&#39;,&#39;webUIRequestUrl&#39;, &#39;w&#39;,  &#39;leftContextSize&#39;,
+           &#39;rightContextSize&#39;, &#39;N&#39;, &#39;O&#39;, &#39;O1&#39;, &#39;O2&#39;, &#39;E&#39;, &#39;pmi&#39;, &#39;mi2&#39;, &#39;mi3&#39;, &#39;logDice&#39;, &#39;ll&#39;`
+
+    Details:
+        The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+        To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
+        Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.
+
+    Example:
+        ```
+        $ kcon = KorAPConnection(verbose=True)
+        $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
+        ```
+    &#34;&#34;&#34;
+    with localconverter(robjects.default_converter + pandas2ri.converter):
+        if type(node) is list:
+            node = robjects.StrVector(node)
+        if type(vc) is list:
+            vc = robjects.StrVector(vc)
+
+        return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))</code></pre>
+</details>
+</dd>
 <dt id="KorAPClient.KorAPConnection.collocationScoreQuery"><code class="name flex">
 <span>def <span class="ident">collocationScoreQuery</span></span>(<span>self, node, collocate, vc='', **kwargs)</span>
 </code></dt>
@@ -691,6 +854,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
         - **offset** - start offset for query results to fetch
         - **maxFetch** - maximum number of query results to fetch
         - **verbose**
+        - **randomizePageOrder** - fetch result pages in pseudo random order if true. (default = `False`)
 
         Returns:
             `KorAPQuery`
@@ -769,6 +933,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
 <li><strong>offset</strong> - start offset for query results to fetch</li>
 <li><strong>maxFetch</strong> - maximum number of query results to fetch</li>
 <li><strong>verbose</strong></li>
+<li><strong>randomizePageOrder</strong> - fetch result pages in pseudo random order if true. (default = <code>False</code>)</li>
 </ul>
 <h2 id="returns">Returns</h2>
 <p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p></div>
@@ -782,6 +947,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
     - **offset** - start offset for query results to fetch
     - **maxFetch** - maximum number of query results to fetch
     - **verbose**
+    - **randomizePageOrder** - fetch result pages in pseudo random order if true. (default = `False`)
 
     Returns:
         `KorAPQuery`
@@ -830,6 +996,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
 <li>
 <h4><code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code></h4>
 <ul class="">
+<li><code><a title="KorAPClient.KorAPConnection.collocationAnalysis" href="#KorAPClient.KorAPConnection.collocationAnalysis">collocationAnalysis</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.collocationScoreQuery" href="#KorAPClient.KorAPConnection.collocationScoreQuery">collocationScoreQuery</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.corpusQuery" href="#KorAPClient.KorAPConnection.corpusQuery">corpusQuery</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.corpusStats" href="#KorAPClient.KorAPConnection.corpusStats">corpusStats</a></code></li>
@@ -850,7 +1017,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
