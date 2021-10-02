@@ -79,6 +79,33 @@ fig.show()
 ```
 ![Frequency per million words of “Hello World“ in DE vs. AT from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)
 
+### Identify *in … setzen* light verb constructions by the `collocationAnalysis` method
+[![Lifecycle:experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+```python
+from KorAPClient import KorAPConnection
+
+kcon = KorAPConnection(verbose=True)
+results = kcon.collocationAnalysis("focus(in [tt/p=NN] {[tt/l=setzen]})",
+                                   leftContextSize=1,
+                                   rightContextSize=0,
+                                   exactFrequencies=False,
+                                   searchHitsSampleLimit=1000,
+                                   topCollocatesLimit=20)
+results['collocate'] = "[" + results['collocate'] +"](" + results['webUIRequestUrl'] +")"
+print(results[['collocate', 'logDice', 'pmi', 'll']].head(10).round(2).to_markdown(floatfmt=".2f"))
+```
+|    | collocate                                                                                                                                                  |   logDice |   pmi |        ll |
+|---:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|----------:|------:|----------:|
+|  1 | [Szene](https://korap.ids-mannheim.de/?q=Szene%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                              |     10.37 | 11.54 | 824928.58 |
+|  2 | [Gang](https://korap.ids-mannheim.de/?q=Gang%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                                |      9.65 | 10.99 | 366993.93 |
+|  3 | [Verbindung](https://korap.ids-mannheim.de/?q=Verbindung%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                    |      9.20 | 10.34 | 347644.75 |
+|  4 | [Kenntnis](https://korap.ids-mannheim.de/?q=Kenntnis%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                        |      9.15 | 10.67 | 206902.89 |
+|  5 | [Bewegung](https://korap.ids-mannheim.de/?q=Bewegung%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                        |      8.80 |  9.91 | 264577.07 |
+|  6 | [Brand](https://korap.ids-mannheim.de/?q=Brand%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                              |      8.76 |  9.97 | 210654.43 |
+|  7 | [Anführungszeichen](https://korap.ids-mannheim.de/?q=Anf%c3%bchrungszeichen%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp) |      8.06 | 12.52 |  54148.31 |
+|  8 | [Kraft](https://korap.ids-mannheim.de/?q=Kraft%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                              |      7.94 |  8.91 | 189399.70 |
+|  9 | [Beziehung](https://korap.ids-mannheim.de/?q=Beziehung%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                      |      6.92 |  8.29 |  37723.54 |
+| 10 | [Relation](https://korap.ids-mannheim.de/?q=Relation%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                        |      6.64 | 10.24 |  17105.84 |
 ## Command Line Invocation
 The Python KorAP client can also be called from the command line and shell scripts:
 ```shell script
