@@ -13,9 +13,11 @@ CURRENT_R_PACKAGE_VERSION = "0.7.1"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
-    warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__  + " is outdated, please update.", DeprecationWarning)
+    warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__ + " is outdated, please update.",
+                  DeprecationWarning)
 
 pandas2ri.activate()
+
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -31,7 +33,7 @@ class KorAPConnection(RS4):
         - **userAgent** (default = `"Python-KorAP-Client"`)
         - **timeout** (default = 110)
         - **verbose** (default = False)
-        - **cache** (dafault = True)
+        - **cache** (default = True)
         """
         if 'userAgent' not in kwargs:
             kwargs["userAgent"] = "Python-KorAP-Client"
