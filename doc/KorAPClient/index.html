@@ -41,9 +41,11 @@ CURRENT_R_PACKAGE_VERSION = &#34;0.7.1&#34;
 
 KorAPClient = packages.importr(&#39;RKorAPClient&#39;)
 if version.parse(KorAPClient.__version__) &lt; version.parse(CURRENT_R_PACKAGE_VERSION):
-    warnings.warn(&#34;R-package RKorAPClient version &#34; + KorAPClient.__version__  + &#34; is outdated, please update.&#34;, DeprecationWarning)
+    warnings.warn(&#34;R-package RKorAPClient version &#34; + KorAPClient.__version__ + &#34; is outdated, please update.&#34;,
+                  DeprecationWarning)
 
 pandas2ri.activate()
+
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -59,7 +61,7 @@ class KorAPConnection(RS4):
         - **userAgent** (default = `&#34;Python-KorAP-Client&#34;`)
         - **timeout** (default = 110)
         - **verbose** (default = False)
-        - **cache** (dafault = True)
+        - **cache** (default = True)
         &#34;&#34;&#34;
         if &#39;userAgent&#39; not in kwargs:
             kwargs[&#34;userAgent&#34;] = &#34;Python-KorAP-Client&#34;
@@ -299,7 +301,7 @@ class KorAPQuery(RS4):
 <li><strong>userAgent</strong> (default = <code>"Python-KorAP-Client"</code>)</li>
 <li><strong>timeout</strong> (default = 110)</li>
 <li><strong>verbose</strong> (default = False)</li>
-<li><strong>cache</strong> (dafault = True)</li>
+<li><strong>cache</strong> (default = True)</li>
 </ul></div>
 <details class="source">
 <summary>
@@ -318,7 +320,7 @@ class KorAPQuery(RS4):
         - **userAgent** (default = `&#34;Python-KorAP-Client&#34;`)
         - **timeout** (default = 110)
         - **verbose** (default = False)
-        - **cache** (dafault = True)
+        - **cache** (default = True)
         &#34;&#34;&#34;
         if &#39;userAgent&#39; not in kwargs:
             kwargs[&#34;userAgent&#34;] = &#34;Python-KorAP-Client&#34;
