@@ -21,7 +21,7 @@ jobs:
           - os: windows-latest
             python-version: 3.9
           - os: windows-latest
-            r-version: 3.6
+            r-version: release
           - os: ubuntu-latest
             r-version: 3.6
             python-version: 3.9

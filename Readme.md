@@ -26,7 +26,7 @@ sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodiu
 ```
 #### 2. Windows only: Point environment variables to your R installation, e.g.:
 ```
-set R_HOME="C:Program Files\R\R-4.0.2"
+set R_HOME="C:Program Files\R\R-4.1.1"
 set R_USER=%R_HOME%
 set PATH=%R_HOME%\bin;%R_HOME%\bin\x64;%PATH%
 ```
