@@ -1,14 +1,15 @@
 __pdoc__ = {'tests': False}
 
-import rpy2.robjects.packages as packages
-from rpy2.robjects.conversion import localconverter
-import rpy2.robjects.pandas2ri as pandas2ri
-import rpy2.robjects as robjects
-from rpy2.robjects.methods import RS4
-from packaging import version
 import warnings
 
-CURRENT_R_PACKAGE_VERSION = "0.6.1.9000"
+import rpy2.robjects as robjects
+import rpy2.robjects.packages as packages
+import rpy2.robjects.pandas2ri as pandas2ri
+from packaging import version
+from rpy2.robjects.conversion import localconverter
+from rpy2.robjects.methods import RS4
+
+CURRENT_R_PACKAGE_VERSION = "0.7.1"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -123,6 +124,47 @@ class KorAPConnection(RS4):
 
             return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
 
+    def collocationAnalysis(self, node, vc="", **kwargs):
+        """ **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
+
+        - **node** - target word or list of target words
+        - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
+        - **lemmatizeNodeQuery** - if True, node query will be lemmatized, i.e. x -> [tt/l=x]
+        - **minOccur** - minimum absolute number of observed co-occurrences to consider a collocate candidate
+        - **leftContextSize** - size of the left context window
+        - **rightContextSize** - size of the right context window
+        - **topCollocatesLimit** - limit analysis to the n most frequent collocates in the search hits sample
+        - **searchHitsSampleLimit** - limit the size of the search hits sample
+        - **ignoreCollocateCase** - bool, set to True if collocate case should be ignored
+        - **withinSpan** - KorAP span specification for collocations to be searched within
+        - **exactFrequencies** - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies
+        - **stopwords** - vector of stopwords not to be considered as collocates
+        - **seed** - seed for random page collecting order
+        - **expand** - if True, node and vc parameters are expanded to all of their combinations
+
+        Returns:
+            DataFrame with columns `'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',  'leftContextSize',
+               'rightContextSize', 'N', 'O', 'O1', 'O2', 'E', 'pmi', 'mi2', 'mi3', 'logDice', 'll'`
+
+        Details:
+            The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+            To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
+            Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ df = kcon.collocationAnalysis("Grund")
+            ```
+        """
+        with localconverter(robjects.default_converter + pandas2ri.converter):
+            if type(node) is list:
+                node = robjects.StrVector(node)
+            if type(vc) is list:
+                vc = robjects.StrVector(vc)
+
+            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
 
@@ -174,6 +216,7 @@ class KorAPQuery(RS4):
         - **offset** - start offset for query results to fetch
         - **maxFetch** - maximum number of query results to fetch
         - **verbose**
+        - **randomizePageOrder** - fetch result pages in pseudo random order if true. (default = `False`)
 
         Returns:
             `KorAPQuery`

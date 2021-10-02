@@ -1,5 +1,7 @@
 import unittest
+
 from KorAPClient import KorAPConnection
+
 
 class TestKorAPClient(unittest.TestCase):
     def setUp(self):
@@ -20,6 +22,13 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['logDice'][0], 1)
         self.assertGreater(df['pmi'][0], 10)
         self.assertLess(df['pmi'][0], 20)
+
+    def test_collocation_analysis(self):
+        df = self.kcon.collocationAnalysis( "focus([tt/p=ADJA] {Newstickeritis})", vc = "corpusSigle=/W.D17/", leftContextSize=1, rightContextSize=0,
+                                           searchHitsSampleLimit=1, topCollocatesLimit=1,
+                                           exactFrequencies=False)
+        self.assertEqual(df['rightContextSize'][0], 0)
+        self.assertGreater(df['O'][0], df['E'][0])
 
     def test_collocation_score_query_multi_collocates(self):
         df = self.kcon.collocationScoreQuery("Ameisenplage", ["einer", "heimgesucht"], leftContextSize=1, rightContextSize=1)
