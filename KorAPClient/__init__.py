@@ -43,9 +43,9 @@ class KorAPConnection(RS4):
     def corpusStats(self, *args, **kwargs):
         """Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-            - vc = ""
-            - verbose = kco@verbose
-            - as.df = False
+        - **vc** (default = "")
+        - **verbose** (default = kco@verbose)
+        - **as.df** (default = True)
 
         Returns:
             `DataFrame`|`RS4`
@@ -57,8 +57,10 @@ class KorAPConnection(RS4):
             12150897
             ```
         """
+        default_kwargs = {"as.df": True}
+        default_kwargs.update(kwargs)
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return KorAPClient.corpusStats(self, *args, **kwargs)
+            return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         """Query relative frequency of search term(s).
@@ -179,7 +181,7 @@ class KorAPConnection(RS4):
         - **verbose** - (default = `self.verbose`)
 
         Returns:
-            `KorAPQuery` | `pandas.DataFrame`
+            `KorAPQuery`
 
         Example:
             ```
