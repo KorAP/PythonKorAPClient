@@ -71,9 +71,9 @@ class KorAPConnection(RS4):
     def corpusStats(self, *args, **kwargs):
         &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-            - vc = &#34;&#34;
-            - verbose = kco@verbose
-            - as.df = False
+        - **vc** (default = &#34;&#34;)
+        - **verbose** (default = kco@verbose)
+        - **as.df** (default = True)
 
         Returns:
             `DataFrame`|`RS4`
@@ -85,8 +85,10 @@ class KorAPConnection(RS4):
             12150897
             ```
         &#34;&#34;&#34;
+        default_kwargs = {&#34;as.df&#34;: True}
+        default_kwargs.update(kwargs)
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return KorAPClient.corpusStats(self, *args, **kwargs)
+            return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
@@ -207,7 +209,7 @@ class KorAPConnection(RS4):
         - **verbose** - (default = `self.verbose`)
 
         Returns:
-            `KorAPQuery` | `pandas.DataFrame`
+            `KorAPQuery`
 
         Example:
             ```
@@ -330,9 +332,9 @@ class KorAPQuery(RS4):
     def corpusStats(self, *args, **kwargs):
         &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-            - vc = &#34;&#34;
-            - verbose = kco@verbose
-            - as.df = False
+        - **vc** (default = &#34;&#34;)
+        - **verbose** (default = kco@verbose)
+        - **as.df** (default = True)
 
         Returns:
             `DataFrame`|`RS4`
@@ -344,8 +346,10 @@ class KorAPQuery(RS4):
             12150897
             ```
         &#34;&#34;&#34;
+        default_kwargs = {&#34;as.df&#34;: True}
+        default_kwargs.update(kwargs)
         with localconverter(robjects.default_converter + pandas2ri.converter):
-            return KorAPClient.corpusStats(self, *args, **kwargs)
+            return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
@@ -466,7 +470,7 @@ class KorAPQuery(RS4):
         - **verbose** - (default = `self.verbose`)
 
         Returns:
-            `KorAPQuery` | `pandas.DataFrame`
+            `KorAPQuery`
 
         Example:
             ```
@@ -660,7 +664,7 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
 <li><strong>verbose</strong> - (default = <code>self.verbose</code>)</li>
 </ul>
 <h2 id="returns">Returns</h2>
-<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code> | <code>pandas.DataFrame</code></p>
+<p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p>
 <h2 id="example">Example</h2>
 <pre><code>$ kcon = KorAPConnection(verbose=True)
 $ q = kcon.corpusQuery(&quot;Ameisenplage&quot;)
@@ -696,7 +700,7 @@ $ q.slots['collectedMatches']
     - **verbose** - (default = `self.verbose`)
 
     Returns:
-        `KorAPQuery` | `pandas.DataFrame`
+        `KorAPQuery`
 
     Example:
         ```
@@ -727,10 +731,11 @@ $ q.slots['collectedMatches']
 </code></dt>
 <dd>
 <div class="desc"><p>Query the size of the whole corpus or a virtual corpus specified by the vc argument.</p>
-<pre><code>- vc = ""
-- verbose = kco@verbose
-- as.df = False
-</code></pre>
+<ul>
+<li><strong>vc</strong> (default = "")</li>
+<li><strong>verbose</strong> (default = kco@verbose)</li>
+<li><strong>as.df</strong> (default = True)</li>
+</ul>
 <h2 id="returns">Returns</h2>
 <p><code>DataFrame</code>|<code>RS4</code></p>
 <h2 id="example">Example</h2>
@@ -745,9 +750,9 @@ $ df[&quot;tokens&quot;]
 <pre><code class="python">def corpusStats(self, *args, **kwargs):
     &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-        - vc = &#34;&#34;
-        - verbose = kco@verbose
-        - as.df = False
+    - **vc** (default = &#34;&#34;)
+    - **verbose** (default = kco@verbose)
+    - **as.df** (default = True)
 
     Returns:
         `DataFrame`|`RS4`
@@ -759,8 +764,10 @@ $ df[&quot;tokens&quot;]
         12150897
         ```
     &#34;&#34;&#34;
+    default_kwargs = {&#34;as.df&#34;: True}
+    default_kwargs.update(kwargs)
     with localconverter(robjects.default_converter + pandas2ri.converter):
-        return KorAPClient.corpusStats(self, *args, **kwargs)</code></pre>
+        return KorAPClient.corpusStats(self, *args, **default_kwargs)</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPConnection.frequencyQuery"><code class="name flex">
