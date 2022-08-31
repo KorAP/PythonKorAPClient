@@ -148,6 +148,8 @@ Corpus Analysis Platform at the Leibniz Institute for German Language
 
 It is published under the [BSD-2 License](LICENSE.txt).
 
+**Contributor**: [Ines Pisetta](https://github.com/inlpi)
+
 **To cite this work, …**<br>
 please refer to: Kupietz et al. (2020), below.
 ## Contributions
