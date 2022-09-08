@@ -6,7 +6,6 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
 from packaging import version
-from rpy2.robjects.conversion import localconverter
 from rpy2.robjects.methods import RS4
 
 CURRENT_R_PACKAGE_VERSION = "0.7.1"
@@ -16,7 +15,16 @@ if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERS
     warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__ + " is outdated, please update.",
                   DeprecationWarning)
 
-robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter)
+korapclient_converter = robjects.conversion.Converter('base empty converter')
+
+
+@korapclient_converter.py2rpy.register(list)
+def _rpy2py_robject(listObject):
+    return robjects.StrVector(listObject)
+
+
+robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -115,15 +123,7 @@ class KorAPConnection(RS4):
             $ df = kcon.collocationScoreQuery("Grund", "triftiger")
             ```
         """
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(collocate) is list:
-                collocate = robjects.StrVector(collocate)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
+        return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
 
     def collocationAnalysis(self, node, vc="", **kwargs):
         """ **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
@@ -158,13 +158,7 @@ class KorAPConnection(RS4):
             $ df = kcon.collocationAnalysis("Grund")
             ```
         """
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
+        return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
