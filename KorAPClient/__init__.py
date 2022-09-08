@@ -16,8 +16,7 @@ if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERS
     warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__ + " is outdated, please update.",
                   DeprecationWarning)
 
-pandas2ri.activate()
-
+robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter)
 
 # noinspection PyPep8Naming
 class KorAPConnection(RS4):
@@ -92,8 +91,7 @@ class KorAPConnection(RS4):
             5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
             ```
         """
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
+        return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
     def collocationScoreQuery(self, node, collocate, vc="", **kwargs):
         """Get collocation scores for given node(s) and collocate(s).
@@ -126,7 +124,7 @@ class KorAPConnection(RS4):
             if type(vc) is list:
                 vc = robjects.StrVector(vc)
 
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
+            return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
 
     def collocationAnalysis(self, node, vc="", **kwargs):
         """ **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
@@ -167,7 +165,7 @@ class KorAPConnection(RS4):
             if type(vc) is list:
                 vc = robjects.StrVector(vc)
 
-            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+            return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
