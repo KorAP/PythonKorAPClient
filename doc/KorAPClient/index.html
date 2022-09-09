@@ -34,17 +34,24 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
 from packaging import version
-from rpy2.robjects.conversion import localconverter
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = &#34;0.7.1&#34;
+CURRENT_R_PACKAGE_VERSION = &#34;0.7.5&#34;
 
 KorAPClient = packages.importr(&#39;RKorAPClient&#39;)
 if version.parse(KorAPClient.__version__) &lt; version.parse(CURRENT_R_PACKAGE_VERSION):
     warnings.warn(&#34;R-package RKorAPClient version &#34; + KorAPClient.__version__ + &#34; is outdated, please update.&#34;,
                   DeprecationWarning)
 
-pandas2ri.activate()
+korapclient_converter = robjects.conversion.Converter(&#39;base empty converter&#39;)
+
+
+@korapclient_converter.py2rpy.register(list)
+def _rpy2py_robject(listObject):
+    return robjects.StrVector(listObject)
+
+
+robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
 
 
 # noinspection PyPep8Naming
@@ -87,8 +94,7 @@ class KorAPConnection(RS4):
         &#34;&#34;&#34;
         default_kwargs = {&#34;as.df&#34;: True}
         default_kwargs.update(kwargs)
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            return KorAPClient.corpusStats(self, *args, **default_kwargs)
+        return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
@@ -120,8 +126,7 @@ class KorAPConnection(RS4):
             5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
+        return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
     def collocationScoreQuery(self, node, collocate, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34;Get collocation scores for given node(s) and collocate(s).
@@ -146,15 +151,7 @@ class KorAPConnection(RS4):
             $ df = kcon.collocationScoreQuery(&#34;Grund&#34;, &#34;triftiger&#34;)
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(collocate) is list:
-                collocate = robjects.StrVector(collocate)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
+        return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
 
     def collocationAnalysis(self, node, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34; **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
@@ -189,13 +186,7 @@ class KorAPConnection(RS4):
             $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+        return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
@@ -348,8 +339,7 @@ class KorAPQuery(RS4):
         &#34;&#34;&#34;
         default_kwargs = {&#34;as.df&#34;: True}
         default_kwargs.update(kwargs)
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            return KorAPClient.corpusStats(self, *args, **default_kwargs)
+        return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
     def frequencyQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query relative frequency of search term(s).
@@ -381,8 +371,7 @@ class KorAPQuery(RS4):
             5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))
+        return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
     def collocationScoreQuery(self, node, collocate, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34;Get collocation scores for given node(s) and collocate(s).
@@ -407,15 +396,7 @@ class KorAPQuery(RS4):
             $ df = kcon.collocationScoreQuery(&#34;Grund&#34;, &#34;triftiger&#34;)
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(collocate) is list:
-                collocate = robjects.StrVector(collocate)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))
+        return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
 
     def collocationAnalysis(self, node, vc=&#34;&#34;, **kwargs):
         &#34;&#34;&#34; **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
@@ -450,13 +431,7 @@ class KorAPQuery(RS4):
             $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
             ```
         &#34;&#34;&#34;
-        with localconverter(robjects.default_converter + pandas2ri.converter):
-            if type(node) is list:
-                node = robjects.StrVector(node)
-            if type(vc) is list:
-                vc = robjects.StrVector(vc)
-
-            return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))
+        return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
 
     def corpusQuery(self, *args, **kwargs):
         &#34;&#34;&#34;Query search term(s).
@@ -576,13 +551,7 @@ $ df = kcon.collocationAnalysis(&quot;Grund&quot;)
         $ df = kcon.collocationAnalysis(&#34;Grund&#34;)
         ```
     &#34;&#34;&#34;
-    with localconverter(robjects.default_converter + pandas2ri.converter):
-        if type(node) is list:
-            node = robjects.StrVector(node)
-        if type(vc) is list:
-            vc = robjects.StrVector(vc)
-
-        return robjects.conversion.rpy2py(KorAPClient.collocationAnalysis(self, node, vc, **kwargs))</code></pre>
+    return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPConnection.collocationScoreQuery"><code class="name flex">
@@ -637,15 +606,7 @@ $ df = kcon.collocationScoreQuery(&quot;Grund&quot;, &quot;triftiger&quot;)
         $ df = kcon.collocationScoreQuery(&#34;Grund&#34;, &#34;triftiger&#34;)
         ```
     &#34;&#34;&#34;
-    with localconverter(robjects.default_converter + pandas2ri.converter):
-        if type(node) is list:
-            node = robjects.StrVector(node)
-        if type(collocate) is list:
-            collocate = robjects.StrVector(collocate)
-        if type(vc) is list:
-            vc = robjects.StrVector(vc)
-
-        return robjects.conversion.rpy2py(KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs))</code></pre>
+    return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPConnection.corpusQuery"><code class="name flex">
@@ -766,8 +727,7 @@ $ df[&quot;tokens&quot;]
     &#34;&#34;&#34;
     default_kwargs = {&#34;as.df&#34;: True}
     default_kwargs.update(kwargs)
-    with localconverter(robjects.default_converter + pandas2ri.converter):
-        return KorAPClient.corpusStats(self, *args, **default_kwargs)</code></pre>
+    return KorAPClient.corpusStats(self, *args, **default_kwargs)</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPConnection.frequencyQuery"><code class="name flex">
@@ -835,8 +795,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
         5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
         ```
     &#34;&#34;&#34;
-    with localconverter(robjects.default_converter + pandas2ri.converter):
-        return robjects.conversion.rpy2py(KorAPClient.frequencyQuery(self, *args, **kwargs))</code></pre>
+    return KorAPClient.frequencyQuery(self, *args, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>
