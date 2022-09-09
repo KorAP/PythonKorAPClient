@@ -151,7 +151,8 @@ It is published under the [BSD-2 License](LICENSE.txt).
 **Contributor**: [Ines Pisetta](https://github.com/inlpi)
 
 **To cite this work, …**<br>
-please refer to: Kupietz et al. (2020), below.
+please refer to: Kupietz et al. (2020, 2022), below.
+
 ## Contributions
 
 Contributions are very welcome!
@@ -167,7 +168,6 @@ as this software itself – be under the [BSD-2 License](LICENSE.txt).
 
 ## References
 
-- Kupietz, Marc / Margaretha, Eliza / Diewald, Nils / Lüngen, Harald / Fankhauser, Peter (2019): [What’s New in EuReCo? Interoperability, Comparable Corpora, Licensing](https://nbn-resolving.org/urn:nbn:de:bsz:mh39-90261). In: Bański, Piotr/Barbaresi, Adrien/Biber, Hanno/Breiteneder, Evelyn/Clematide, Simon/Kupietz, Marc/Lüngen, Harald/Iliadi, Caroline (eds.): [*Proceedings of the International Corpus Linguistics Conference 2019 Workshop "Challenges in the Management of Large Corpora (CMLC-7)"*](https://ids-pub.bsz-bw.de/solrsearch/index/search/searchtype/collection/id/21038), 22nd of July Mannheim: Leibniz-Institut für Deutsche Sprache, 33-39.
-
 - Kupietz, Marc / Diewald, Nils / Margaretha, Eliza (2020): [RKorAPClient: An R package for accessing the German Reference Corpus DeReKo via KorAP](http://www.lrec-conf.org/proceedings/lrec2020/pdf/2020.lrec-1.867.pdf). In: Calzolari, Nicoletta, Frédéric Béchet, Philippe Blache, Khalid Choukri, Christopher Cieri,  Thierry Declerck, Sara Goggi, Hitoshi Isahara, Bente Maegaard, Joseph Mariani, Hélène Mazo, Asuncion Moreno, Jan Odijk, Stelios Piperidis (eds.): [Proceedings of The 12th Language Resources and Evaluation Conference (LREC 2020)](http://www.lrec-conf.org/proceedings/lrec2020/LREC-2020.pdf). Marseille: European Language Resources Association (ELRA), 7017-7023.
 
+- Kupietz, Marc / Diewald, Nils / Margaretha, Eliza (2022): Building paths to corpus data: A multi-level least effort and maximum return approach. In Fišer, Darja / Witt, Andreas (eds.): [CLARIN. The infrastructure for language resources.](https://www.degruyter.com/document/isbn/9783110767377/html) Berlin: deGruyter.
