@@ -46,7 +46,7 @@ class TestKorAPClient(unittest.TestCase):
         ch_tokens = self.kcon.corpusStats(vc='pubPlaceKey=CH')['tokens'][0]
         self.assertGreater(de_tokens, ch_tokens)
 
-    def test_corpus_stats_with_vc(self):
+    def test_corpus_stats_with_vc_list(self):
         tokens = self.kcon.corpusStats(vc=['pubPlaceKey=DE', 'pubPlaceKey=CH'])['tokens']
         self.assertGreater(tokens[0], tokens[1])
 
