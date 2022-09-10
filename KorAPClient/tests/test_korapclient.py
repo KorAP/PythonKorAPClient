@@ -38,16 +38,16 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['pmi'][1], df['pmi'][0])
 
     def test_corpus_stats(self):
-        df = self.kcon.corpusStats(**{"as.df": True})
+        df = self.kcon.corpusStats()
         self.assertGreater(df['tokens'][0], 10 ** 10)
 
     def test_corpus_stats_with_vc(self):
-        de_tokens = self.kcon.corpusStats(vc='pubPlaceKey="DE"', **{"as.df": True})['tokens'][0]
-        ch_tokens = self.kcon.corpusStats(vc='pubPlaceKey="CH"', **{"as.df": True})['tokens'][0]
+        de_tokens = self.kcon.corpusStats(vc='pubPlaceKey=DE')['tokens'][0]
+        ch_tokens = self.kcon.corpusStats(vc='pubPlaceKey=CH')['tokens'][0]
         self.assertGreater(de_tokens, ch_tokens)
 
     def test_corpus_stats_with_vc(self):
-        tokens = self.kcon.corpusStats(vc=['pubPlaceKey="DE"', 'pubPlaceKey="CH"'], **{"as.df": True})['tokens']
+        tokens = self.kcon.corpusStats(vc=['pubPlaceKey=DE', 'pubPlaceKey=CH'])['tokens']
         self.assertGreater(tokens[0], tokens[1])
 
 
