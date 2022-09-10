@@ -49,12 +49,20 @@ For translating R syntax to Python and vice versa, refer to the [rpy2 Documentat
 
 Please note that some arguments in the original RKorAPClient functions use characters that are not allowed in Python keyword argument names.
 For these cases, you can however use Python's `**kwargs` syntax.
-For example, to get the result of `corpusStats` as a `pandas.DataFrame`, and print the size of the whole corpus in tokens, you can write:
+For example, to let `frequencyQuery` interpret queries as queries for alternative variants and make it return their proportions instead of relative frequencies,
+you can write:
+
 ```python
 from KorAPClient import KorAPConnection
-kcon = KorAPConnection(verbose=True)
-print(kcon.corpusStats(**{"as.df": True})['tokens'][0])
+KorAPConnection(verbose=True) \
+    .frequencyQuery(['"Wissenschaftler.*"', '"Wissenschafter.*"'],\
+                    **{"as.alternatives": True})
 ```
+
+|    | query               |   totalResults | vc   | webUIRequestUrl                                                        |   total |        f |   conf.low |   conf.high |
+|---:|:--------------------|---------------:|:-----|:-----------------------------------------------------------------------|--------:|---------:|-----------:|------------:|
+|  1 | "Wissenschaftler.*" |         942053 |      | https://korap.ids-mannheim.de/?q=%22Wissenschaftler.%2a%22&ql=poliqarp | 1080268 | 0.872055 |   0.871423 |    0.872684 |
+|  2 | "Wissenschafter.*"  |         138215 |      | https://korap.ids-mannheim.de/?q=%22Wissenschafter.%2a%22&ql=poliqarp  | 1080268 | 0.127945 |   0.127316 |    0.128577 |
 
 ## Examples
 #### Frequencies of "Hello World" over years and countries
