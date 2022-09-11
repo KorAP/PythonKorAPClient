@@ -80,7 +80,7 @@ df = KorAPClient.ipm(KorAPConnection().frequencyQuery(QUERY, df.vc)).merge(df)
 alt.Chart(df).mark_line(point=True).encode(y="ipm", x="Year:T", color="Country", href="webUIRequestUrl") \
     .properties(title=QUERY).show()
 ```
-[![Frequency per million words of “Hello World“ in DE vs. CH from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)<!-- -->](https://korap.github.io/PythonKorAPClient/figures/hello_world.html)
+[![Frequency per million words of “Hello World“ in DE vs. CH from 2010 to 2018 in newspapers and magazines](https://raw.githubusercontent.com/KorAP/PythonKorAPClient/master/figures/hello-world.png)<!-- -->](https://korap.github.io/PythonKorAPClient/figures/hello_world.html)
 
 
 ### Identify *in … setzen* light verb constructions by the `collocationAnalysis` method
