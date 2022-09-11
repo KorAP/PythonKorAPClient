@@ -31,8 +31,6 @@ setup(
     python_requires='>=3.7',
     install_requires=[
         'rpy2>=3.3',
-        'plotly',
-        'plotly-express',
         'pandas>=1.2',
         'packaging',
         'markdown'
