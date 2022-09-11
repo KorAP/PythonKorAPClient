@@ -67,9 +67,9 @@ KorAPConnection(verbose=True) \
 ## Examples
 #### Frequencies of "Hello World" over years and countries
 ```python
+from KorAPClient import KorAPClient, KorAPConnection
 import altair as alt
 import pandas as pd
-from KorAPClient import KorAPClient, KorAPConnection
 
 QUERY = "Hello World"
 df = pd.DataFrame(range(2010, 2019), columns=["Year"], dtype=str) \
@@ -80,7 +80,8 @@ df = KorAPClient.ipm(KorAPConnection().frequencyQuery(QUERY, df.vc)).merge(df)
 alt.Chart(df).mark_line(point=True).encode(y="ipm", x="Year:T", color="Country", href="webUIRequestUrl") \
     .properties(title=QUERY).show()
 ```
-![Frequency per million words of “Hello World“ in DE vs. AT from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)
+[![Frequency per million words of “Hello World“ in DE vs. CH from 2010 to 2018 in newspapers and magazines](figures/hello-world.png)<!-- -->](https://korap.github.io/PythonKorAPClient/figures/hello_world.html)
+
 
 ### Identify *in … setzen* light verb constructions by the `collocationAnalysis` method
 [![Lifecycle:experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://www.tidyverse.org/lifecycle/#experimental)
