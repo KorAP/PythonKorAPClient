@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 import altair as alt
-import pandas as pd
-from KorAPClient import KorAPClient, KorAPConnection
+from KorAPClient import KorAPClient, KorAPConnection, expand_grid
 
 QUERY = "Hello World"
-YEARS = range(2010, 2019)
-COUNTRIES = ["DE", "CH"]
-
-df = pd.DataFrame(YEARS, columns=["Year"], dtype=str).merge(pd.DataFrame(COUNTRIES, columns=["Country"]), how="cross")
-df["vc"] = "textType=/Zeit.*/ & pubPlaceKey = " + df.Country + " & pubDate in " + df.Year
+df = expand_grid({"Year": range(2010, 2019), "Country": ["DE", "CH"]})
+df["vc"] = "textType=/Zeit.*/ & pubPlaceKey = " + df.Country + " & pubDate in " + list(map(str, df.Year))
 
 kcon = KorAPConnection(verbose=True)
 

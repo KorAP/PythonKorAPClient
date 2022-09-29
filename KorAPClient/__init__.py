@@ -1,7 +1,9 @@
 __pdoc__ = {'tests': False}
 
 import warnings
+from itertools import product
 
+import pandas as pd
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
@@ -24,6 +26,27 @@ def _rpy2py_robject(listObject):
 
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+
+
+def expand_grid(dictionary):
+    """Create a oandas DataFrame from all combinations of inputs
+
+    - **dictionary** - dict with variable names as  keys and their values as vectors
+
+    Returns:
+        DataFrame with column names as specified by the dictionary key and all combinations of the specified values
+        in the rows.
+
+    Example:
+        ```
+        $ df = expand_grid({"Year": range(2010, 2019), "Country": ["DE", "CH"] })
+
+        $ df["vc"] = "textType=/Zeit.*/ & pubPlaceKey = " + df.Country + " & pubDate in " + list(map(str, df.Year))
+        ```
+    """
+
+    return pd.DataFrame([row for row in product(*dictionary.values())],
+                        columns=dictionary.keys())
 
 
 # noinspection PyPep8Naming
