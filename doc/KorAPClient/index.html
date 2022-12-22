@@ -29,7 +29,9 @@
 <pre><code class="python">__pdoc__ = {&#39;tests&#39;: False}
 
 import warnings
+from itertools import product
 
+import pandas as pd
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
@@ -52,6 +54,27 @@ def _rpy2py_robject(listObject):
 
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+
+
+def expand_grid(dictionary):
+    &#34;&#34;&#34;Create a oandas DataFrame from all combinations of inputs
+
+    - **dictionary** - dict with variable names as  keys and their values as vectors
+
+    Returns:
+        DataFrame with column names as specified by the dictionary key and all combinations of the specified values
+        in the rows.
+
+    Example:
+        ```
+        $ df = expand_grid({&#34;Year&#34;: range(2010, 2019), &#34;Country&#34;: [&#34;DE&#34;, &#34;CH&#34;] })
+
+        $ df[&#34;vc&#34;] = &#34;textType=/Zeit.*/ &amp; pubPlaceKey = &#34; + df.Country + &#34; &amp; pubDate in &#34; + list(map(str, df.Year))
+        ```
+    &#34;&#34;&#34;
+
+    return pd.DataFrame([row for row in product(*dictionary.values())],
+                        columns=dictionary.keys())
 
 
 # noinspection PyPep8Naming
@@ -275,6 +298,51 @@ class KorAPQuery(RS4):
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="KorAPClient.expand_grid"><code class="name flex">
+<span>def <span class="ident">expand_grid</span></span>(<span>dictionary)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a oandas DataFrame from all combinations of inputs</p>
+<ul>
+<li><strong>dictionary</strong> - dict with variable names as
+keys and their values as vectors</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with column names as specified by the dictionary key and all combinations of the specified values
+in the rows.</p>
+<h2 id="example">Example</h2>
+<pre><code>$ df = expand_grid({&quot;Year&quot;: range(2010, 2019), &quot;Country&quot;: [&quot;DE&quot;, &quot;CH&quot;] })
+
+$ df[&quot;vc&quot;] = &quot;textType=/Zeit.*/ &amp; pubPlaceKey = &quot; + df.Country + &quot; &amp; pubDate in &quot; + list(map(str, df.Year))
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def expand_grid(dictionary):
+    &#34;&#34;&#34;Create a oandas DataFrame from all combinations of inputs
+
+    - **dictionary** - dict with variable names as  keys and their values as vectors
+
+    Returns:
+        DataFrame with column names as specified by the dictionary key and all combinations of the specified values
+        in the rows.
+
+    Example:
+        ```
+        $ df = expand_grid({&#34;Year&#34;: range(2010, 2019), &#34;Country&#34;: [&#34;DE&#34;, &#34;CH&#34;] })
+
+        $ df[&#34;vc&#34;] = &#34;textType=/Zeit.*/ &amp; pubPlaceKey = &#34; + df.Country + &#34; &amp; pubDate in &#34; + list(map(str, df.Year))
+        ```
+    &#34;&#34;&#34;
+
+    return pd.DataFrame([row for row in product(*dictionary.values())],
+                        columns=dictionary.keys())</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -961,6 +1029,11 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
 <ul></ul>
 </div>
 <ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="KorAPClient.expand_grid" href="#KorAPClient.expand_grid">expand_grid</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
