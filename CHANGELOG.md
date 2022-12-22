@@ -1,5 +1,7 @@
 # Version history
 
+- advertise support for Python 3.11
+
 ## 0.7.5
 
 - Updates recommended RKorAPClient version to 0.7.5
