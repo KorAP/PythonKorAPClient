@@ -20,7 +20,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v3.0.8
+      uses: actions/cache@v3.2.0
       with:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
@@ -44,13 +44,13 @@ jobs:
     - name: Install R dependencies
       run: Rscript -e "install.packages('RKorAPClient')"
     - name: Cache R packages on Linux
-      uses: actions/cache@v3.0.8
+      uses: actions/cache@v3.2.0
       with:
         path: /usr/local/lib/R/site-library
         key: ${{ runner.os }}-r-${{ matrix.config.r-version }}-${{ hashFiles('DESCRIPTION') }}
       if: runner.os == 'Linux'
     - name: Cache R packages
-      uses: actions/cache@v3.0.8
+      uses: actions/cache@v3.2.0
       with:
         path: ${{ env.R_LIBS_USER }}
         key: ${{ runner.os }}-r-${{ matrix.config.r-version }}-${{ hashFiles('DESCRIPTION') }}
