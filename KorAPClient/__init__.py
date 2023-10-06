@@ -1,4 +1,4 @@
-__pdoc__ = {'tests': False}
+__pdoc__ = {"tests": False}
 
 import warnings
 from itertools import product
@@ -10,14 +10,18 @@ import rpy2.robjects.pandas2ri as pandas2ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "0.7.5"
+CURRENT_R_PACKAGE_VERSION = "0.7.7"
 
-KorAPClient = packages.importr('RKorAPClient')
+KorAPClient = packages.importr("RKorAPClient")
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
-    warnings.warn("R-package RKorAPClient version " + KorAPClient.__version__ + " is outdated, please update.",
-                  DeprecationWarning)
+    warnings.warn(
+        "R-package RKorAPClient version "
+        + KorAPClient.__version__
+        + " is outdated, please update.",
+        DeprecationWarning,
+    )
 
-korapclient_converter = robjects.conversion.Converter('base empty converter')
+korapclient_converter = robjects.conversion.Converter("base empty converter")
 
 
 @korapclient_converter.py2rpy.register(list)
@@ -25,7 +29,9 @@ def _rpy2py_robject(listObject):
     return robjects.StrVector(listObject)
 
 
-robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+robjects.conversion.set_conversion(
+    robjects.default_converter + pandas2ri.converter + korapclient_converter
+)
 
 
 def expand_grid(dictionary):
@@ -45,8 +51,9 @@ def expand_grid(dictionary):
         ```
     """
 
-    return pd.DataFrame([row for row in product(*dictionary.values())],
-                        columns=dictionary.keys())
+    return pd.DataFrame(
+        [row for row in product(*dictionary.values())], columns=dictionary.keys()
+    )
 
 
 # noinspection PyPep8Naming
@@ -65,7 +72,7 @@ class KorAPConnection(RS4):
         - **verbose** (default = False)
         - **cache** (default = True)
         """
-        if 'userAgent' not in kwargs:
+        if "userAgent" not in kwargs:
             kwargs["userAgent"] = "Python-KorAP-Client"
         kco = KorAPClient.KorAPConnection(*args, **kwargs)
         super().__init__(kco)
@@ -149,7 +156,7 @@ class KorAPConnection(RS4):
         return KorAPClient.collocationScoreQuery(self, node, collocate, vc, **kwargs)
 
     def collocationAnalysis(self, node, vc="", **kwargs):
-        """ **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
+        """**EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
 
         - **node** - target word or list of target words
         - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
