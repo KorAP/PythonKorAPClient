@@ -38,7 +38,7 @@ import rpy2.robjects.pandas2ri as pandas2ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = &#34;0.7.5&#34;
+CURRENT_R_PACKAGE_VERSION = &#34;0.7.7&#34;
 
 KorAPClient = packages.importr(&#39;RKorAPClient&#39;)
 if version.parse(KorAPClient.__version__) &lt; version.parse(CURRENT_R_PACKAGE_VERSION):
