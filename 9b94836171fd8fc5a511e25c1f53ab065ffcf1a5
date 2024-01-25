@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22dde879_32e43eaa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-01-25T16:48:10Z",
+      "side": 1,
+      "message": "just two nits, otherwise working fine",
+      "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "723fdb06_191e8ef5",
+        "filename": "KorAPClient/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-01-25T16:48:10Z",
+      "side": 1,
+      "message": "Better remove the **verbose** parameter. Bug in the RKorAPCLient doc ...",
+      "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e4cd409_4679d833",
+        "filename": "KorAPClient/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-01-25T16:48:10Z",
+      "side": 1,
+      "message": "should be `kcon.textMetadata([\"WUD17/A97/08542\", \"WUD17/B96/57558\", \"WUD17/A97/08541\"])`",
+      "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
