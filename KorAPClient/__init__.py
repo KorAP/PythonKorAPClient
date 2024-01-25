@@ -29,7 +29,7 @@ robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.conver
 
 
 def expand_grid(dictionary):
-    """Create a oandas DataFrame from all combinations of inputs
+    """Create a pandas DataFrame from all combinations of inputs
 
     - **dictionary** - dict with variable names as  keys and their values as vectors
 
@@ -219,7 +219,24 @@ class KorAPConnection(RS4):
             ```
         """
         return KorAPQuery(self, *args, **kwargs)
+    
+    def textMetadata(self, textSigle, **kwargs):
+        """ Retrieves metadata for a text, identified by its sigle (id) using the corresponding KorAP API
+        (see `Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval`).
 
+        - **textSigle** - unique text id (concatenation of corpus, document and text ids, separated by `/`, e.g. ) or list thereof
+
+        Returns:
+            DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called `errors`.
+            If there are metadata columns you cannot make sense of, please ignore them. The function simply returns all the metadata it gets from the server.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.textMetadata(["WUD17/A97/08542", "WUD17/B96/57558", "WUD17/A97/08541"])
+            ```
+        """
+        return KorAPClient.textMetadata(self, textSigle, **kwargs)
 
 class KorAPQuery(RS4):
     """Query to a KorAP server."""
