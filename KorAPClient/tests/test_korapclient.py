@@ -11,6 +11,36 @@ class TestKorAPClient(unittest.TestCase):
         q = self.kcon.corpusQuery("Test")
         self.assertEqual(q.slots['class'][0], 'KorAPQuery')
 
+    def test_query_with_snippets(self):
+        q = self.kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchNext()
+        self.assertIn('collectedMatches', q.slots)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
+
+    def test_query_with_snippets_is_tokenized_with_fetch_next(self):
+        q = self.kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchNext()
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.left'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.right'].iloc[0], str)
+        left_contexts = "".join(q.slots['collectedMatches']['tokens.left'])
+        self.assertIn('\t', left_contexts)
+
+    def test_query_with_snippets_is_tokenized_with_fetch_all(self):
+        q = self.kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchAll()
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.left'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.right'].iloc[0], str)
+        left_contexts = "".join(q.slots['collectedMatches']['tokens.left'])
+        self.assertIn('\t', left_contexts)
+
+    def test_query_with_snippets_is_tokenized_with_fetch_rest(self):
+        q = self.kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchRest()
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.left'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.right'].iloc[0], str)
+        self.assertIsInstance(q.slots['collectedMatches']['textSigle'].iloc[1], str)
+        left_contexts = "".join(q.slots['collectedMatches']['tokens.left'])
+        self.assertIn('\t', left_contexts)
+
     def test_frequency_query(self):
         df = self.kcon.frequencyQuery("Ameisenplage")
         self.assertGreater(df['totalResults'].iloc[0], 10)
