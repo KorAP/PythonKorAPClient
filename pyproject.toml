@@ -1,0 +1,38 @@
+[project]
+name = "KorAPClient"
+version = "0.7.5.9000"
+description = "Client package to access KorAP's web service API"
+authors = [
+    {name = "Marc Kupietz",email = "kupietz@ids-mannheim.de"},
+]
+dependencies = [
+    "markdown",
+    "packaging",
+    "pandas>=1.2",
+    "rpy2>=3.3",
+]
+requires-python = ">=3.7"
+readme = "README.md"
+license = {text = "BSD"}
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+[project.urls]
+Homepage = "https://www1.ids-mannheim.de/kl/projekte/korap.html"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.pdm]
+distribution = true
