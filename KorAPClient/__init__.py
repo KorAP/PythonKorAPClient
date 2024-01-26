@@ -4,12 +4,23 @@ import warnings
 from itertools import product
 
 import pandas as pd
+from rpy2.robjects.conversion import localconverter, get_conversion
+
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
+from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
-
+from rpy2.robjects.vectors import (BoolVector,
+                                   DataFrame,
+                                   DateVector,
+                                   FactorVector,
+                                   FloatVector,
+                                   FloatSexpVector,
+                                   StrVector,
+                                   IntVector,
+                                   POSIXct)
 CURRENT_R_PACKAGE_VERSION = "0.8.0"
 
 KorAPClient = packages.importr('RKorAPClient')
@@ -26,6 +37,28 @@ def _rpy2py_robject(listObject):
 
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+
+delete_lists_from_datafrmes = robjects.default_converter
+
+#@df_rules.rpy2py.register(ri.ListSexpVector)
+#def to_str(obj):
+#    return [str(v) if v != na_values.NA_Character else pd.NA for v in obj]
+
+# define the top-level converter
+def toDataFrame(obj):
+    cv = get_conversion() # get the converter from current context
+    j=len(obj)
+    for i in range(len(obj)):
+        if isinstance(obj[i], ri.ListSexpVector):
+            j=i
+            break
+
+    return pd.DataFrame(
+        {str(k): cv.rpy2py(obj[i]) for i, k in enumerate(obj.names[:j])}
+    )
+
+# associate the converter with R data.frame class
+delete_lists_from_datafrmes.rpy2py_nc_map[ri.ListSexpVector].update({"data.frame": toDataFrame})
 
 
 def expand_grid(dictionary):
@@ -256,7 +289,11 @@ class KorAPQuery(RS4):
         Returns:
             `KorAPQuery`
         """
-        return KorAPClient.fetchNext(self, *args, **kwargs)
+        res = KorAPClient.fetchNext(self, *args, **kwargs)
+        with localconverter(delete_lists_from_datafrmes):
+            x = res.slots['collectedMatches']
+        res.slots['collectedMatches'] = x
+        return res
 
     def fetchRest(self, *args, **kwargs):
         """Fetch remaining query results
@@ -266,7 +303,11 @@ class KorAPQuery(RS4):
         Returns:
             `KorAPQuery`
         """
-        return KorAPClient.fetchRest(self, *args, **kwargs)
+        res = KorAPClient.fetchRest(self, *args, **kwargs)
+        with localconverter(delete_lists_from_datafrmes):
+            x = res.slots['collectedMatches']
+        res.slots['collectedMatches'] = x
+        return res
 
     def fetchAll(self, *args, **kwargs):
         """Fetch all query results
@@ -279,4 +320,9 @@ class KorAPQuery(RS4):
         Example:
             See `KorAPConnection.corpusQuery`.
         """
-        return KorAPClient.fetchAll(self, *args, **kwargs)
+        res = KorAPClient.fetchAll(self, *args, **kwargs)
+        with localconverter(delete_lists_from_datafrmes):
+            x = res.slots['collectedMatches']
+        res.slots['collectedMatches'] = x
+        return res
+
