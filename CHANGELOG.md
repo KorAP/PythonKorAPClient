@@ -1,6 +1,13 @@
 # Version history
 
-- advertise support for Python 3.11
+## 0.8.0
+- Updates recommended RKorAPClient version to 0.8.0
+- Added `textMetadata` KorAPConnection method to retrieve all metadata for a text based on its sigle
+- Added `webUiRequestUrl` column also to corpusStats results, so that also virtual corpus definitions can be linked to / tested directly in the KorAP UI
+- uses server side tokenized matches in collocation analysis, if supported by KorAP server
+- fixed regional demo (will be updated again soon)
+- Python 3.11 and 3.12 are now supported
+- Python 3.7 support has been dropped 
 
 ## 0.7.5
 
