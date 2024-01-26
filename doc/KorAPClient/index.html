@@ -57,7 +57,7 @@ robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.conver
 
 
 def expand_grid(dictionary):
-    &#34;&#34;&#34;Create a oandas DataFrame from all combinations of inputs
+    &#34;&#34;&#34;Create a pandas DataFrame from all combinations of inputs
 
     - **dictionary** - dict with variable names as  keys and their values as vectors
 
@@ -247,7 +247,24 @@ class KorAPConnection(RS4):
             ```
         &#34;&#34;&#34;
         return KorAPQuery(self, *args, **kwargs)
+    
+    def textMetadata(self, textSigle, **kwargs):
+        &#34;&#34;&#34; Retrieves metadata for a text, identified by its sigle (id) using the corresponding KorAP API
+        (see `Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval`).
 
+        - **textSigle** - unique text id (concatenation of corpus, document and text ids, separated by `/`, e.g. ) or list thereof
+
+        Returns:
+            DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called `errors`.
+            If there are metadata columns you cannot make sense of, please ignore them. The function simply returns all the metadata it gets from the server.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.textMetadata([&#34;WUD17/A97/08542&#34;, &#34;WUD17/B96/57558&#34;, &#34;WUD17/A97/08541&#34;])
+            ```
+        &#34;&#34;&#34;
+        return KorAPClient.textMetadata(self, textSigle, **kwargs)
 
 class KorAPQuery(RS4):
     &#34;&#34;&#34;Query to a KorAP server.&#34;&#34;&#34;
@@ -304,7 +321,7 @@ class KorAPQuery(RS4):
 <span>def <span class="ident">expand_grid</span></span>(<span>dictionary)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Create a oandas DataFrame from all combinations of inputs</p>
+<div class="desc"><p>Create a pandas DataFrame from all combinations of inputs</p>
 <ul>
 <li><strong>dictionary</strong> - dict with variable names as
 keys and their values as vectors</li>
@@ -322,7 +339,7 @@ $ df[&quot;vc&quot;] = &quot;textType=/Zeit.*/ &amp; pubPlaceKey = &quot; + df.C
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def expand_grid(dictionary):
-    &#34;&#34;&#34;Create a oandas DataFrame from all combinations of inputs
+    &#34;&#34;&#34;Create a pandas DataFrame from all combinations of inputs
 
     - **dictionary** - dict with variable names as  keys and their values as vectors
 
@@ -536,7 +553,25 @@ $ df[&quot;vc&quot;] = &quot;textType=/Zeit.*/ &amp; pubPlaceKey = &quot; + df.C
             [130 rows x 6 columns]
             ```
         &#34;&#34;&#34;
-        return KorAPQuery(self, *args, **kwargs)</code></pre>
+        return KorAPQuery(self, *args, **kwargs)
+    
+    def textMetadata(self, textSigle, **kwargs):
+        &#34;&#34;&#34; Retrieves metadata for a text, identified by its sigle (id) using the corresponding KorAP API
+        (see `Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval`).
+
+        - **textSigle** - unique text id (concatenation of corpus, document and text ids, separated by `/`, e.g. ) or list thereof
+
+        Returns:
+            DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called `errors`.
+            If there are metadata columns you cannot make sense of, please ignore them. The function simply returns all the metadata it gets from the server.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection(verbose=True)
+            $ kcon.textMetadata([&#34;WUD17/A97/08542&#34;, &#34;WUD17/B96/57558&#34;, &#34;WUD17/A97/08541&#34;])
+            ```
+        &#34;&#34;&#34;
+        return KorAPClient.textMetadata(self, textSigle, **kwargs)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -866,6 +901,45 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
     return KorAPClient.frequencyQuery(self, *args, **kwargs)</code></pre>
 </details>
 </dd>
+<dt id="KorAPClient.KorAPConnection.textMetadata"><code class="name flex">
+<span>def <span class="ident">textMetadata</span></span>(<span>self, textSigle, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves metadata for a text, identified by its sigle (id) using the corresponding KorAP API
+(see <code>Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval</code>).</p>
+<ul>
+<li><strong>textSigle</strong> - unique text id (concatenation of corpus, document and text ids, separated by <code>/</code>, e.g. ) or list thereof</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called <code>errors</code>.
+If there are metadata columns you cannot make sense of, please ignore them. The function simply returns all the metadata it gets from the server.</p>
+<h2 id="example">Example</h2>
+<pre><code>$ kcon = KorAPConnection(verbose=True)
+$ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &quot;WUD17/A97/08541&quot;])
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def textMetadata(self, textSigle, **kwargs):
+    &#34;&#34;&#34; Retrieves metadata for a text, identified by its sigle (id) using the corresponding KorAP API
+    (see `Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval`).
+
+    - **textSigle** - unique text id (concatenation of corpus, document and text ids, separated by `/`, e.g. ) or list thereof
+
+    Returns:
+        DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called `errors`.
+        If there are metadata columns you cannot make sense of, please ignore them. The function simply returns all the metadata it gets from the server.
+
+    Example:
+        ```
+        $ kcon = KorAPConnection(verbose=True)
+        $ kcon.textMetadata([&#34;WUD17/A97/08542&#34;, &#34;WUD17/B96/57558&#34;, &#34;WUD17/A97/08541&#34;])
+        ```
+    &#34;&#34;&#34;
+    return KorAPClient.textMetadata(self, textSigle, **kwargs)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 <dt id="KorAPClient.KorAPQuery"><code class="flex name class">
@@ -1044,6 +1118,7 @@ $ kcon.frequencyQuery(&quot;Ameisenplage&quot;, vc=[&quot;pubDate in &quot;+str(
 <li><code><a title="KorAPClient.KorAPConnection.corpusQuery" href="#KorAPClient.KorAPConnection.corpusQuery">corpusQuery</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.corpusStats" href="#KorAPClient.KorAPConnection.corpusStats">corpusStats</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.frequencyQuery" href="#KorAPClient.KorAPConnection.frequencyQuery">frequencyQuery</a></code></li>
+<li><code><a title="KorAPClient.KorAPConnection.textMetadata" href="#KorAPClient.KorAPConnection.textMetadata">textMetadata</a></code></li>
 </ul>
 </li>
 <li>
