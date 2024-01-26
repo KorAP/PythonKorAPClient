@@ -141,15 +141,15 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 **Author**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/)
 
-Copyright (c) 2021, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
+Copyright (c) 2024, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
 This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
-Corpus Analysis Platform at the Leibniz Institute for German Language
+Corpus Analysis Platform at the Leibniz Institute for the German Language
 ([IDS](http://www.ids-mannheim.de/)).
 
 It is published under the [BSD-2 License](LICENSE.txt).
 
-**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald]((https://github.com/akron))
+**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald](https://github.com/akron), Tim Feldmüller
 
 **To cite this work,** please refer to: Kupietz et al. (2020, 2022), below.
 
