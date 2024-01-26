@@ -35,6 +35,24 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b001050_0f86bef0",
+        "filename": "KorAPClient/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-01-26T07:53:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "723fdb06_191e8ef5",
+      "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7e4cd409_4679d833",
@@ -48,6 +66,24 @@
       "writtenOn": "2024-01-25T16:48:10Z",
       "side": 1,
       "message": "should be `kcon.textMetadata([\"WUD17/A97/08542\", \"WUD17/B96/57558\", \"WUD17/A97/08541\"])`",
+      "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "71ab31be_a299b54a",
+        "filename": "KorAPClient/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-01-26T07:53:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e4cd409_4679d833",
       "revId": "9b94836171fd8fc5a511e25c1f53ab065ffcf1a5",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
