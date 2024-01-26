@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "markdown",
     "packaging",
+    "Pyarrow",
     "pandas>=1.2",
     "rpy2>=3.3",
 ]
