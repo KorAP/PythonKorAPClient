@@ -28,7 +28,8 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
 ]
 [project.urls]
-Homepage = "https://www1.ids-mannheim.de/kl/projekte/korap.html"
+Homepage = "https://github.com/KorAP/PythonKorAPClient"
+Issues = "https://github.com/KorAP/PythonKorAPClient/issues"
 
 [build-system]
 requires = ["setuptools>=61", "wheel"]
