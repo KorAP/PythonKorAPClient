@@ -13,7 +13,7 @@ dependencies = [
     "rpy2>=3.3",
 ]
 requires-python = ">=3.7"
-readme = "README.md"
+readme = "Readme.md"
 license = {text = "BSD"}
 classifiers = [
     "Intended Audience :: Developers",
@@ -34,6 +34,8 @@ Homepage = "https://www1.ids-mannheim.de/kl/projekte/korap.html"
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+exclude = ["figures"]
 
 [tool.pdm]
 distribution = true
