@@ -80,6 +80,16 @@ class TestKorAPClient(unittest.TestCase):
         tokens = self.kcon.corpusStats(vc=['pubPlaceKey=DE', 'pubPlaceKey=CH'])['tokens']
         self.assertGreater(tokens.iloc[0], tokens.iloc[1])
 
+    def test_textMetadata(self):
+        df = self.kcon.textMetadata(["WUD17/A97/08542", "WUD17/B96/57558", "WUD17/A97/08541"])
+        self.assertEqual(len(df), 3)
+        self.assertIn('textSigle', df.columns)
+        self.assertIn('title', df.columns)
+        self.assertIn('pubDate', df.columns)
+        self.assertIn('creationDate', df.columns)
+        self.assertIn('pubPlace', df.columns)
+        self.assertIn('author', df.columns)
+
 
 if __name__ == '__main__':
     unittest.main()
