@@ -32,9 +32,14 @@ import warnings
 from itertools import product
 
 import pandas as pd
+from rpy2.rinterface_lib.sexp import StrSexpVector, NULLType
+from rpy2.robjects import numpy2ri
+from rpy2.robjects.conversion import localconverter, get_conversion
+
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
 import rpy2.robjects.pandas2ri as pandas2ri
+from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
@@ -54,6 +59,47 @@ def _rpy2py_robject(listObject):
 
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
+
+fix_lists_in_dataframes = robjects.default_converter
+
+
+@fix_lists_in_dataframes.rpy2py.register(StrSexpVector)
+def to_str(obj):
+    for i in range(len(obj)):
+        obj[i] = str(obj[i])
+    return &#34;\t&#34;.join(obj)
+
+def my_cv(obj, cv):
+    if isinstance(obj, ri.StrSexpVector):
+        for i in range(len(obj)):
+            obj[i] = str(obj[i])
+        return StrSexpVector((obj))
+    else:
+        return cv.rpy2py(obj)
+
+def toDataFrame(obj):
+    cv = get_conversion() # get the converter from current context
+    names = []
+    objects = []
+    for i in range(len(obj)):
+        if isinstance(obj[i], ri.ListSexpVector):
+            list_name = obj.names[i] +  &#34;.&#34; if not isinstance(obj.names, NULLType) else &#34;l&#34; + str(i) + &#34;.&#34;
+            for j in range(len(obj[i])):
+                local_name = str(obj[i].names[j]) if not isinstance(obj[i].names, NULLType) else str(j)
+                names.append(list_name + local_name)
+                objects.append(obj[i][j])
+        else:
+            names.append(obj.names[i])
+            objects.append(obj[i])
+
+
+    return pd.DataFrame(
+        {str(k): my_cv(objects[i], cv) for i, k in enumerate(names)}
+    )
+
+# associate the converter with R data.frame class
+fix_lists_in_dataframes.rpy2py_nc_map[ri.ListSexpVector].update({&#34;data.frame&#34;: toDataFrame})
+
 
 
 def expand_grid(dictionary):
@@ -284,7 +330,12 @@ class KorAPQuery(RS4):
         Returns:
             `KorAPQuery`
         &#34;&#34;&#34;
-        return KorAPClient.fetchNext(self, *args, **kwargs)
+
+        res = KorAPClient.fetchNext(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res
 
     def fetchRest(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch remaining query results
@@ -294,7 +345,11 @@ class KorAPQuery(RS4):
         Returns:
             `KorAPQuery`
         &#34;&#34;&#34;
-        return KorAPClient.fetchRest(self, *args, **kwargs)
+        res = KorAPClient.fetchRest(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res
 
     def fetchAll(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch all query results
@@ -307,7 +362,11 @@ class KorAPQuery(RS4):
         Example:
             See `KorAPConnection.corpusQuery`.
         &#34;&#34;&#34;
-        return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
+        res = KorAPClient.fetchRest(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res</code></pre>
 </details>
 </section>
 <section>
@@ -357,6 +416,70 @@ $ df[&quot;vc&quot;] = &quot;textType=/Zeit.*/ &amp; pubPlaceKey = &quot; + df.C
 
     return pd.DataFrame([row for row in product(*dictionary.values())],
                         columns=dictionary.keys())</code></pre>
+</details>
+</dd>
+<dt id="KorAPClient.my_cv"><code class="name flex">
+<span>def <span class="ident">my_cv</span></span>(<span>obj, cv)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def my_cv(obj, cv):
+    if isinstance(obj, ri.StrSexpVector):
+        for i in range(len(obj)):
+            obj[i] = str(obj[i])
+        return StrSexpVector((obj))
+    else:
+        return cv.rpy2py(obj)</code></pre>
+</details>
+</dd>
+<dt id="KorAPClient.toDataFrame"><code class="name flex">
+<span>def <span class="ident">toDataFrame</span></span>(<span>obj)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def toDataFrame(obj):
+    cv = get_conversion() # get the converter from current context
+    names = []
+    objects = []
+    for i in range(len(obj)):
+        if isinstance(obj[i], ri.ListSexpVector):
+            list_name = obj.names[i] +  &#34;.&#34; if not isinstance(obj.names, NULLType) else &#34;l&#34; + str(i) + &#34;.&#34;
+            for j in range(len(obj[i])):
+                local_name = str(obj[i].names[j]) if not isinstance(obj[i].names, NULLType) else str(j)
+                names.append(list_name + local_name)
+                objects.append(obj[i][j])
+        else:
+            names.append(obj.names[i])
+            objects.append(obj[i])
+
+
+    return pd.DataFrame(
+        {str(k): my_cv(objects[i], cv) for i, k in enumerate(names)}
+    )</code></pre>
+</details>
+</dd>
+<dt id="KorAPClient.to_str"><code class="name flex">
+<span>def <span class="ident">to_str</span></span>(<span>obj)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@fix_lists_in_dataframes.rpy2py.register(StrSexpVector)
+def to_str(obj):
+    for i in range(len(obj)):
+        obj[i] = str(obj[i])
+    return &#34;\t&#34;.join(obj)</code></pre>
 </details>
 </dd>
 </dl>
@@ -970,7 +1093,12 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         Returns:
             `KorAPQuery`
         &#34;&#34;&#34;
-        return KorAPClient.fetchNext(self, *args, **kwargs)
+
+        res = KorAPClient.fetchNext(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res
 
     def fetchRest(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch remaining query results
@@ -980,7 +1108,11 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         Returns:
             `KorAPQuery`
         &#34;&#34;&#34;
-        return KorAPClient.fetchRest(self, *args, **kwargs)
+        res = KorAPClient.fetchRest(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res
 
     def fetchAll(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch all query results
@@ -993,7 +1125,11 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         Example:
             See `KorAPConnection.corpusQuery`.
         &#34;&#34;&#34;
-        return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
+        res = KorAPClient.fetchRest(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        return res</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1033,7 +1169,11 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     Example:
         See `KorAPConnection.corpusQuery`.
     &#34;&#34;&#34;
-    return KorAPClient.fetchAll(self, *args, **kwargs)</code></pre>
+    res = KorAPClient.fetchRest(self, *args, **kwargs)
+    with localconverter(fix_lists_in_dataframes):
+        df = res.slots[&#39;collectedMatches&#39;]
+    res.slots[&#39;collectedMatches&#39;] = df
+    return res</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPQuery.fetchNext"><code class="name flex">
@@ -1064,7 +1204,12 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     Returns:
         `KorAPQuery`
     &#34;&#34;&#34;
-    return KorAPClient.fetchNext(self, *args, **kwargs)</code></pre>
+
+    res = KorAPClient.fetchNext(self, *args, **kwargs)
+    with localconverter(fix_lists_in_dataframes):
+        df = res.slots[&#39;collectedMatches&#39;]
+    res.slots[&#39;collectedMatches&#39;] = df
+    return res</code></pre>
 </details>
 </dd>
 <dt id="KorAPClient.KorAPQuery.fetchRest"><code class="name flex">
@@ -1089,7 +1234,11 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     Returns:
         `KorAPQuery`
     &#34;&#34;&#34;
-    return KorAPClient.fetchRest(self, *args, **kwargs)</code></pre>
+    res = KorAPClient.fetchRest(self, *args, **kwargs)
+    with localconverter(fix_lists_in_dataframes):
+        df = res.slots[&#39;collectedMatches&#39;]
+    res.slots[&#39;collectedMatches&#39;] = df
+    return res</code></pre>
 </details>
 </dd>
 </dl>
@@ -1106,6 +1255,9 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="KorAPClient.expand_grid" href="#KorAPClient.expand_grid">expand_grid</a></code></li>
+<li><code><a title="KorAPClient.my_cv" href="#KorAPClient.my_cv">my_cv</a></code></li>
+<li><code><a title="KorAPClient.toDataFrame" href="#KorAPClient.toDataFrame">toDataFrame</a></code></li>
+<li><code><a title="KorAPClient.to_str" href="#KorAPClient.to_str">to_str</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
