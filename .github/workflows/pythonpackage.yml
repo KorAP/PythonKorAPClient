@@ -63,7 +63,7 @@ jobs:
       env:
         R_HOME: "c:/R"
         R_USER: "c:/R"
-        PATH: "c:/R/bin/x64;${{ env.PATH }}"
+        PATH: "c:/R/bin;c:/R/bin/x64;${{ env.PATH }}"
     - name: Test with pytest on POSIX
       if: runner.os != 'Windows'
       run: |
