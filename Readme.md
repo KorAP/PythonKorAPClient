@@ -14,12 +14,13 @@ Currently, this is no native Python package. Internally, it uses [KorAP's client
 via [rpy2](https://rpy2.github.io/). The latter also automatically translates between R data frames (or [tibbles](https://tibble.tidyverse.org/)) and [pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html). 
 
 ## Installation
-#### 1. Install latest R version from [CRAN](https://cran.r-project.org/bin/)
-or, alternatively, on some recent Linux distributions:
+#### 1. Install latest R version for your OS, following the instructions from [CRAN](https://cran.r-project.org/bin/)
+
+#### Linux only: Install system dependencies
 
 ```shell script
 #### Debian / Ubuntu
-sudo apt-get install -y r-base r-base-dev r-cran-tidyverse r-cran-r.utils r-cran-pixmap r-cran-webshot r-cran-ade4 r-cran-segmented r-cran-purrr r-cran-dygraphs r-cran-cvst r-cran-quantmod r-cran-graphlayouts r-cran-rappdirs r-cran-ggdendro r-cran-seqinr r-cran-heatmaply r-cran-igraph r-cran-plotly libcurl4-gnutls-dev libssl-dev libfontconfig1-dev libsecret-1-dev libxml2-dev libsodium-dev python3-pip python3-rpy2 python3-pandas
+sudo apt install r-base-dev r-cran-rcpp r-cran-cpp11 libcurl4-gnutls-dev libxml2-dev libsodium-dev libsecret-1-dev libfontconfig1-dev libssl-dev libv8-dev python3-dev python3-pip python3-rpy2 python3-pandas python3-pytest
 
 #### Fedora / CentOS / RHEL
 sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
@@ -31,15 +32,20 @@ Start R and run:
 install.packages('RKorAPClient', repos='https://cloud.r-project.org/')
 ```
 or install RKorAPClient from the package installation menu entry.
+
 #### 3. Install the Python package
-On Linux an MacOs:
+
+On Linux and MacOs:
+
 ```shell script
-python3 -m pip install KorAPClient
+# py -m pip install KorAPClient -U
+python3 -m pip install KorAPClient -U # --break-system-packages
 ```
 
 On Windows:
 ```shell script
-py -m pip install KorAPClient
+# py -m pip install pip -U
+py -m pip install KorAPClient -U
 ```
 
 ## Documentation
