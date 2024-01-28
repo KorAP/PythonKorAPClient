@@ -1,0 +1,28 @@
+include:
+  local: ci/install-rkorapclient-ci.yml
+
+test-korapclient-on-stable:
+  extends: .install-rkorapclient
+  image: ubuntu:latest
+  cache:
+    key: rkorapclient-ubuntu-stable
+    paths:
+    - apt-cache/
+    - ccache/
+    - rlib/
+  script:
+    - python3 -m pip install pip -U
+    - python3 -m pip install setuptools -U
+    - python3 -m pip install pytest -U
+    - python3 -m pip install .
+    - python3 -m pytest -v
+
+
+test-korapclient-on-rolling:
+  extends: .install-rkorapclient
+  image: ubuntu:rolling
+  script:
+    - python3 -m pip install pip -U --break-system-packages
+    - python3 -m pip install pytest -U --break-system-packages
+    - python3 -m pip install . --break-system-packages
+    - python3 -m pytest -v
