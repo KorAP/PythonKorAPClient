@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1602813b_135d8912",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-05-31T09:01:21Z",
+      "side": 1,
+      "message": "Please also update Changelog and .toml, like here : https://gitlab.ids-mannheim.de/KorAP/PythonKorAPClient/-/commit/56c983d0f7171083089926a7f108fb2831d57be9\n\nAnd please test it on Mac 😊",
+      "revId": "b34e1dcc5d99e74012e6ef88b4848a4f95258280",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
