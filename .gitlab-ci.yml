@@ -1,7 +1,7 @@
 include:
   local: ci/install-rkorapclient-ci.yml
 
-test-korapclient-on-stable:
+test-korapclient-on-latest:
   extends: .install-rkorapclient
   image: ubuntu:latest
   cache:
@@ -11,18 +11,8 @@ test-korapclient-on-stable:
     - ccache/
     - rlib/
   script:
-    - python3 -m pip install pip -U
-    - python3 -m pip install setuptools -U
-    - python3 -m pip install pytest -U
+    - mkdir -p ~/.config/pip
+    - echo -e "[global]\nbreak-system-packages = true" >> ~/.config/pip/pip.conf 
     - python3 -m pip install .
     - python3 -m pytest -v
 
-
-test-korapclient-on-rolling:
-  extends: .install-rkorapclient
-  image: ubuntu:rolling
-  script:
-    - python3 -m pip install pip -U --break-system-packages
-    - python3 -m pip install pytest -U --break-system-packages
-    - python3 -m pip install . --break-system-packages
-    - python3 -m pytest -v

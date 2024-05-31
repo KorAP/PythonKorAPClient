@@ -2,8 +2,8 @@ VER=
 CXX17=$(CCACHE) g++$(VER)
 CCACHE=ccache
 #CCACHE=
-CC=$(CCACHE) gcc$(VER)
-CXX=$(CCACHE) g++$(VER)
+CC=$(CCACHE) gcc$(VER) -Wno-error=format-security
+CXX=$(CCACHE) g++$(VER) -Wno-error=format-security
 CXX11=$(CCACHE) g++$(VER)
 CXX14=$(CCACHE) g++$(VER)
 CXX17=$(CCACHE) g++$(VER)

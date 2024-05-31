@@ -33,12 +33,15 @@
     - echo "R_LIBS='$R_LIBS_USER'" > .Renviron
     - echo "MAKEFLAGS=-j$(nproc)" >> ~/.R/Makevars
     - echo "MAKE=make -j$(nproc)" >> ~/.R/Makevars
+    - echo "CFLAGS+=-Wno-error=format-security" >> ~/.R/Makevars
+    - echo "CCFLAGS+=-Wformat=0" >> ~/.R/Makevars
     - apt-get update
-    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" --no-install-recommends software-properties-common dirmngr ccache wget python3-pip
+    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" --no-install-recommends software-properties-common dirmngr ccache wget python3-pip libdeflate-dev
     - wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
     - add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-     # - add-apt-repository ppa:c2d4u.team/c2d4u4.0+
+    - add-apt-repository -y ppa:c2d4u.team/c2d4u4.0+
     - grep -E "sudo apt.* install" Readme.md | sed -e 's/.*sudo apt.* install/apt-get install --no-install-recommends -o dir::cache::archives="$APT_CACHE_DIR" -y libharfbuzz-dev libfribidi-dev /g' | sh
+    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" r-cran-tidyverse
     - ln -s $(which ccache) /usr/local/sbin/gcc
     - ln -s $(which ccache) /usr/local/sbin/g++
     - end_section install_linux_packages
