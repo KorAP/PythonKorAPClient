@@ -41,7 +41,7 @@
     - add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
     - add-apt-repository -y ppa:c2d4u.team/c2d4u4.0+
     - grep -E "sudo apt.* install" Readme.md | sed -e 's/.*sudo apt.* install/apt-get install --no-install-recommends -o dir::cache::archives="$APT_CACHE_DIR" -y libharfbuzz-dev libfribidi-dev /g' | sh
-    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" r-cran-tidyverse
+    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" r-cran-ggplot2 r-cran-broom R.cache r-cran-tibble r-cran-magrittr r-cran-tidyr r-cran-dplyr r-cran-lubridate r-cran-jsonlite r-cran-keyring r-cran-httr r-cran-curl r-cran-purrr r-cran-stringr r-cran-urltools r-cran-remotes
     - ln -s $(which ccache) /usr/local/sbin/gcc
     - ln -s $(which ccache) /usr/local/sbin/g++
     - end_section install_linux_packages
@@ -49,6 +49,6 @@
     - export PATH=/usr/local/sbin:$PATH
     # - export RENV_CONFIG_REPOS_OVERRIDE=https://packagemanager.posit.co/cran/__linux__/$(lsb_release --short --codename)/latest
     # - echo "options(repos = c(CRAN = \"$RENV_CONFIG_REPOS_OVERRIDE\"))" >> ~/.Rprofile
-    - R -q -e "install.packages(c('remotes', 'RKorAPClient'), dependencies = TRUE)"
+    - R -q -e "install.packages(c('RKorAPClient'), dependencies = TRUE)"
     - end_section installing
   script:
