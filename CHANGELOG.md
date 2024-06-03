@@ -1,5 +1,9 @@
 # Version history
 
+## 0.8.1
+
+- Updates recommended RKorAPClient version to 0.8.1
+
 ## 0.8.0
 
 - Updates recommended RKorAPClient version to 0.8.0
