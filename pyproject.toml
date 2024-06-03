@@ -1,6 +1,6 @@
 [project]
 name = "KorAPClient"
-version = "0.8.0.9000"
+version = "0.8.1"
 description = "Client package to access KorAP's web service API"
 authors = [
     {name = "Marc Kupietz",email = "kupietz@ids-mannheim.de"},

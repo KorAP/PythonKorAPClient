@@ -1,5 +1,10 @@
 # Version history
 
+## 0.8.1
+
+- Updates recommended RKorAPClient version to 0.8.1
+- fixed rare frequencyQuery incompatibility with outdated KorAP instances (see KorAP/Kustvakt#668)
+
 ## 0.8.0
 
 - Updates recommended RKorAPClient version to 0.8.0
