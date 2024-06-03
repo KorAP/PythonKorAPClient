@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "83f0bb1b_7c3f8596",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-06-03T11:52:51Z",
+      "side": 1,
+      "message": "You can add:\n* fixed rare frequencyQuery incompatibility with outdated KorAP instances (see KorAP/Kustvakt#668)\nto the changelog. (Relevant for ICC, CoRoLa, CNC, NKJP and some more)",
+      "revId": "f262bd8de818c7dd5227878e7dd0caff60001942",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
