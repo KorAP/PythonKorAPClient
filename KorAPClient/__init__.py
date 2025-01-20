@@ -15,7 +15,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "0.8.1"
+CURRENT_R_PACKAGE_VERSION = "0.9.0"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -206,7 +206,7 @@ class KorAPConnection(RS4):
         - **topCollocatesLimit** - limit analysis to the n most frequent collocates in the search hits sample
         - **searchHitsSampleLimit** - limit the size of the search hits sample
         - **ignoreCollocateCase** - bool, set to True if collocate case should be ignored
-        - **withinSpan** - KorAP span specification for collocations to be searched within
+        - **withinSpan** - KorAP span specification (see <https://korap.ids-mannheim.de/doc/ql/poliqarp-plus?embedded=true#spans>) for collocations to be searched within. Defaults to `base/s=s`
         - **exactFrequencies** - if False, extrapolate observed co-occurrence frequencies from frequencies in search hits sample, otherwise retrieve exact co-occurrence frequencies
         - **stopwords** - vector of stopwords not to be considered as collocates
         - **seed** - seed for random page collecting order
@@ -229,6 +229,11 @@ class KorAPConnection(RS4):
         """
         return KorAPClient.collocationAnalysis(self, node, vc, **kwargs)
 
+    def mergeDuplicateCollocates(self, *args, **kwargs):
+        """Merge collocation analysis results for different context positions."""
+        return KorAPClient.mergeDuplicateCollocates(*args, **kwargs)
+
+
     def corpusQuery(self, *args, **kwargs):
         """Query search term(s).
 
@@ -237,7 +242,7 @@ class KorAPConnection(RS4):
         - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** - determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
         - **ql** - query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
-        - **fields** - (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass"]`)
+        - **fields** - (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass", "matchStart", "matchEnd"]`)
         - **verbose** - (default = `self.verbose`)
 
         Returns:
