@@ -89,6 +89,52 @@ class TestKorAPClient(unittest.TestCase):
         self.assertIn('creationDate', df.columns)
         self.assertIn('pubPlace', df.columns)
         self.assertIn('author', df.columns)
+    
+    def test_corpus_query_token_api(self):
+        q = self.kcon.corpusQuery("focus([tt/p=ADJA] {Newstickeritis})", vc="corpusSigle=/W.D17/", metadataOnly=False)
+        q = q.fetchNext()
+        matches = q.slots['collectedMatches']
+        
+        self.assertGreater(len(matches), 10)
+        
+        unique_matches = matches['tokens.match'].unique()
+        self.assertEqual(len(unique_matches), 1)
+        self.assertEqual(unique_matches[0], "Newstickeritis")
+        
+        left_contexts = matches['tokens.left']
+        self.assertTrue(any('reine' in context for context in left_contexts))
+        
+        right_contexts = matches['tokens.right']
+        self.assertTrue(any('Begriff' in context for context in right_contexts))
+    
+    def test_match_start_and_end(self):
+        q = self.kcon.corpusQuery("focus([tt/p=ADJA] {Newstickeritis})", vc="corpusSigle=/W.D17/", metadataOnly=False)
+        q = q.fetchNext()
+        matches = q.slots['collectedMatches']
+        
+        self.assertGreater(matches['matchEnd'].max(), 1000)
+        self.assertTrue((matches['matchEnd'] == matches['matchStart']).all())
+
+    def test_extended_metadata_fields_ked(self):
+        kcon_ked = KorAPConnection(KorAPUrl="https://korap.ids-mannheim.de/instance/ked", verbose=True)
+        q = kcon_ked.corpusQuery(
+            "einfache",
+            fields=[
+                "textSigle", "pubDate", "pubPlace", "availability", "textClass",
+                "snippet", "tokens", "KED.cover1Herder", "KED.cover2Herder",
+                "KED.cover3Herder", "KED.cover4Herder", "KED.cover5Herder",
+                "KED.nPara", "KED.nPunct1kTks", "KED.nSent", "KED.nToks",
+                "KED.nToksSentMd", "KED.nTyps", "KED.rcpnt", "KED.rcpntLabel",
+                "KED.strtgy", "KED.strtgyLabel", "KED.topic", "KED.topicLabel",
+                "KED.txttyp", "KED.txttypLabel"
+            ]
+        ).fetchAll()
+        df = q.slots['collectedMatches']
+        self.assertGreater(len(df), 0)
+        self.assertGreater(min(df['KED.nToks'].astype(float)), 100)
+        self.assertGreater(min(df['KED.nSent'].astype(float)), 8)
+        self.assertGreater(min(df['KED.rcpnt'].str.len()), 5)
+
 
 
 if __name__ == '__main__':
