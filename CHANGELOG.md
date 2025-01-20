@@ -1,5 +1,15 @@
 # Version history
 
+## 0.9.0
+
+- Updates recommended RKorAPClient version to 0.9.0
+- Added `matchStart` and `matchEnd` columns to corpusQuery results, containing the start and end positions of the match in the text
+- Added `mergeDuplicateCollocates` function to merge collocation analysis results for different context positions
+- Added a query column to collocation analysis results
+- Improved documentation for span parameter in `collocationAnalysis` functions
+- Updated `textMetadata` method to use new metadata fields API, if available, to retrieve custom metadata for a text based on its sigle
+- Added new unit tests to cover the new features and changes
+
 ## 0.8.1
 
 - Updates recommended RKorAPClient version to 0.8.1
