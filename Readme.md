@@ -39,7 +39,7 @@ or install RKorAPClient from the package installation menu entry.
 
 #### 3. Install the Python package
 
-On Linux and MacOs:
+On Linux and macOS:
 
 ```shell script
 # py -m pip install KorAPClient -U
@@ -152,7 +152,7 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 **Authors**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/), [Tim Feldmüller](https://www.ids-mannheim.de/digspra/personal/feldmueller)
 
-Copyright (c) 2024, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
+Copyright (c) 2025, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
 This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Leibniz Institute for the German Language
