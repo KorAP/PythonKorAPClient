@@ -30,7 +30,7 @@ jobs:
       run: |
         sudo apt-get update -y
         sudo apt-get install -y libglpk-dev libsodium-dev libxml2-dev libcurl4-openssl-dev
-        mkdir -p /usr/local/lib/R/site-library
+        sudo mkdir -p /usr/local/lib/R/site-library
         sudo chown $(whoami) /usr/local/lib/R/site-library
         export R_LIBS_USER=/usr/local/lib/R/site-library
       if: runner.os == 'Linux'
