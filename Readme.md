@@ -150,7 +150,7 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 ## Development and License
 
-**Author**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/)
+**Authors**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/), [Tim Feldmüller](https://www.ids-mannheim.de/digspra/personal/feldmueller)
 
 Copyright (c) 2024, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
@@ -160,7 +160,7 @@ Corpus Analysis Platform at the Leibniz Institute for the German Language
 
 It is published under the [BSD-2 License](LICENSE.txt).
 
-**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald](https://github.com/akron), Tim Feldmüller
+**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald](https://github.com/akron)
 
 **To cite this work,** please refer to: Kupietz et al. (2020, 2022), below.
 
