@@ -1,7 +1,6 @@
 import unittest
 
-from KorAPClient import KorAPConnection
-from rpy2.rinterface import NULL
+from KorAPClient import KorAPConnection, NULL
 
 
 class TestKorAPClient(unittest.TestCase):
