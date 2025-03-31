@@ -15,7 +15,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "0.9.0"
+CURRENT_R_PACKAGE_VERSION = "1.0.0"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -115,6 +115,29 @@ class KorAPConnection(RS4):
             kwargs["userAgent"] = "Python-KorAP-Client"
         kco = KorAPClient.KorAPConnection(*args, **kwargs)
         super().__init__(kco)
+
+    def auth(self, *args, **kwargs):
+        """
+        Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+        - **kco** (default = "")
+        - **app_id**
+        - **app_secret**
+        - **scope** (default = True)
+        Returns:
+            `KorAPConnection`|`RS4`
+        Example:
+            ```
+            $ from rpy2 import robjects as robj
+            $ kcon = KorAPConnection(accessToken = robj.rinterface.NULL, verbose=True)
+            $ kcon = kcon.auth()
+            $ q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
+            $ q = q.fetchAll()
+            $ q.slots['collectedMatches'].snippet
+            ```
+        """
+        kco = KorAPClient.auth(self, *args, **kwargs)
+        super().__init__(kco)
+        return self
 
     def corpusStats(self, *args, **kwargs):
         """Query the size of the whole corpus or a virtual corpus specified by the vc argument.
