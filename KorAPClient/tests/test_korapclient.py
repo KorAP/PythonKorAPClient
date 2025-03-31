@@ -1,7 +1,6 @@
 import unittest
 
-from KorAPClient import KorAPConnection
-
+from KorAPClient import KorAPConnection, NULL
 
 class TestKorAPClient(unittest.TestCase):
     def setUp(self):
@@ -136,6 +135,9 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(min(df['KED.rcpnt'].str.len()), 5)
 
 
+    def test_authorization(self):
+        kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
+        self.assertIsNotNone(kcon.slots['accessToken'])
 
 if __name__ == '__main__':
     unittest.main()

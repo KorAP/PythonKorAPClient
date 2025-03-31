@@ -75,6 +75,18 @@ KorAPConnection(verbose=True) \
 |  1 | "Wissenschaftler.*" |         942053 |      | https://korap.ids-mannheim.de/?q=%22Wissenschaftler.%2a%22&ql=poliqarp | 1080268 | 0.872055 |   0.871423 |    0.872684 |
 |  2 | "Wissenschafter.*"  |         138215 |      | https://korap.ids-mannheim.de/?q=%22Wissenschafter.%2a%22&ql=poliqarp  | 1080268 | 0.127945 |   0.127316 |    0.128577 |
 
+
+### Authorization
+
+In order to retrieve KWIC data from copyrighted texts, you need to authenticate yourself and authorize the client to act on behalf of you.
+There are different ways to do this (see [Authorization Section of RKorAPClient](https://github.com/KorAP/RKorAPClient#-authorizing-rkorapclient-applications-to-access-restricted-kwics-from-copyrighted-texts)).
+The easiest way is to use the `auth()` method of the `KorAPConnection` class. This will open a browser window and ask you to log in with your KorAP account.
+
+```python
+from KorAPClient import KorAPConnection
+kcon = KorAPConnection().auth()
+```
+
 ## Examples
 #### Frequencies of "Hello World" over years and countries
 ```python
@@ -99,7 +111,7 @@ alt.Chart(df).mark_line(point=True).encode(y="ipm", x="Year:T", color="Country",
 ```python
 from KorAPClient import KorAPConnection
 
-kcon = KorAPConnection(verbose=True)
+kcon = KorAPConnection(verbose=True).auth()
 results = kcon.collocationAnalysis("focus(in [tt/p=NN] {[tt/l=setzen]})",
                                    leftContextSize=1,
                                    rightContextSize=0,
