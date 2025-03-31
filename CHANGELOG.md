@@ -1,5 +1,11 @@
 # Version history
 
+## 1.0.0
+
+- Simplified authorization process for accessing restricted data via the new `auth()` function
+- Fixed issues with tokenized matches in `corpusQuery` results
+- Fixed smoothing constant in `mergeDuplicateCollocates` function
+
 ## 0.9.0
 
 - Updates recommended RKorAPClient version to 0.9.0
