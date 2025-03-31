@@ -137,6 +137,30 @@ class KorAPConnection(RS4):
         default_kwargs.update(kwargs)
         return KorAPClient.corpusStats(self, *args, **default_kwargs)
 
+    def auth(self, *args, **kwargs):
+        """Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+
+        - **kco** (default = "")
+        - **app_id**
+        - **app_secret**
+        - **scope** (default = True)
+
+        Returns:
+            `KorAPConnection`|`RS4`
+
+        Example:
+            ```
+            $ from rpy2 import robjects as robj
+            $ kcon = KorAPConnection(accessToken = robj.rinterface.NULL, verbose=True)
+            & kcon.auth()
+            $ q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
+            $ q = q.fetchAll()
+            $ q.slots['collectedMatches'].snippet
+
+            ```
+        """
+        return KorAPClient.auth(self, *args, **kwargs)
+
     def frequencyQuery(self, *args, **kwargs):
         """Query relative frequency of search term(s).
 
