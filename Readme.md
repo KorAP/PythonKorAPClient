@@ -39,7 +39,7 @@ or install RKorAPClient from the package installation menu entry.
 
 #### 3. Install the Python package
 
-On Linux and MacOs:
+On Linux and macOS:
 
 ```shell script
 # py -m pip install KorAPClient -U
@@ -150,9 +150,9 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 ## Development and License
 
-**Author**: [Marc Kupietz](http://www1.ids-mannheim.de/zfo/personal/kupietz/)
+**Authors**: [Marc Kupietz](https://www.ids-mannheim.de/digspra/personal/kupietz/), [Tim Feldmüller](https://www.ids-mannheim.de/digspra/personal/feldmueller)
 
-Copyright (c) 2024, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
+Copyright (c) 2025, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
 This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Leibniz Institute for the German Language
@@ -160,7 +160,7 @@ Corpus Analysis Platform at the Leibniz Institute for the German Language
 
 It is published under the [BSD-2 License](LICENSE.txt).
 
-**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald](https://github.com/akron), Tim Feldmüller
+**Contributors**: [Ines Pisetta](https://github.com/inlpi), [Nils Diewald](https://github.com/akron)
 
 **To cite this work,** please refer to: Kupietz et al. (2020, 2022), below.
 

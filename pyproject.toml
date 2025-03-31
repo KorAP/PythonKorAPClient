@@ -4,6 +4,7 @@ version = "0.9.0"
 description = "Client package to access KorAP's web service API"
 authors = [
     {name = "Marc Kupietz",email = "kupietz@ids-mannheim.de"},
+    {name = "Tim Feldmüller",email = "feldmueller@ids-mannheim.de"}
 ]
 dependencies = [
     "markdown",
@@ -24,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
 ]
