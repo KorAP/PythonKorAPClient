@@ -1,11 +1,12 @@
 import unittest
 
 from KorAPClient import KorAPConnection
+from rpy2.rinterface import NULL
 
 
 class TestKorAPClient(unittest.TestCase):
     def setUp(self):
-        self.kcon = KorAPConnection(verbose=True)
+        self.kcon = KorAPConnection(verbose=True, accessToken=NULL)
 
     def test_query(self):
         q = self.kcon.corpusQuery("Test")
