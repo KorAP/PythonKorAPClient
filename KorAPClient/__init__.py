@@ -7,6 +7,7 @@ import pandas as pd
 from rpy2.rinterface_lib.sexp import StrSexpVector, NULLType
 from rpy2.robjects import numpy2ri
 from rpy2.robjects.conversion import localconverter, get_conversion
+from rpy2.rinterface import NULL
 
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
@@ -24,6 +25,8 @@ if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERS
 
 korapclient_converter = robjects.conversion.Converter('base empty converter')
 
+# Export NULL
+NULL = NULL
 
 @korapclient_converter.py2rpy.register(list)
 def _rpy2py_robject(listObject):
@@ -117,24 +120,37 @@ class KorAPConnection(RS4):
         super().__init__(kco)
 
     def auth(self, *args, **kwargs):
-        """
-        Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
-        - **kco** (default = "")
-        - **app_id**
-        - **app_secret**
-        - **scope** (default = True)
+        """ Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+
+        - **kco** - `KorAPConnection` object
+        - **app_id** - OAuth2 application id. Defaults to the generic KorAP client application id.
+        - **app_secret** - OAuth2 application secret. Used with confidential client applications. Defaults to `NULL`.
+        - **scope** - OAuth2 scope. Defaults to "search match_info".
+
         Returns:
-            `KorAPConnection`|`RS4`
+
+            Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots['accessToken']`.
+
         Example:
-            ```
-            $ from rpy2 import robjects as robj
-            $ kcon = KorAPConnection(accessToken = robj.rinterface.NULL, verbose=True)
-            $ kcon = kcon.auth()
-            $ q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
-            $ q = q.fetchAll()
-            $ q.slots['collectedMatches'].snippet
-            ```
+
+            # Create a KorAPConnection object without an existing access token
+
+            kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+
+            # Perform a query using the authenticated connection
+
+            q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
+
+            # Fetch all results
+
+            q = q.fetchAll()
+
+            # Access the collected matches
+
+            print(q.slots['collectedMatches'].snippet)
+
         """
+
         kco = KorAPClient.auth(self, *args, **kwargs)
         super().__init__(kco)
         return self
