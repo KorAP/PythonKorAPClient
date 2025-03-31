@@ -7,6 +7,7 @@ import pandas as pd
 from rpy2.rinterface_lib.sexp import StrSexpVector, NULLType
 from rpy2.robjects import numpy2ri
 from rpy2.robjects.conversion import localconverter, get_conversion
+from rpy2.rinterface import NULL
 
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as packages
@@ -15,7 +16,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "0.9.0"
+CURRENT_R_PACKAGE_VERSION = "1.0.0"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -24,6 +25,8 @@ if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERS
 
 korapclient_converter = robjects.conversion.Converter('base empty converter')
 
+# Export NULL
+NULL = NULL
 
 @korapclient_converter.py2rpy.register(list)
 def _rpy2py_robject(listObject):
@@ -115,6 +118,42 @@ class KorAPConnection(RS4):
             kwargs["userAgent"] = "Python-KorAP-Client"
         kco = KorAPClient.KorAPConnection(*args, **kwargs)
         super().__init__(kco)
+
+    def auth(self, *args, **kwargs):
+        """ Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+
+        - **kco** - `KorAPConnection` object
+        - **app_id** - OAuth2 application id. Defaults to the generic KorAP client application id.
+        - **app_secret** - OAuth2 application secret. Used with confidential client applications. Defaults to `NULL`.
+        - **scope** - OAuth2 scope. Defaults to "search match_info".
+
+        Returns:
+
+            Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots['accessToken']`.
+
+        Example:
+
+            # Create a KorAPConnection object without an existing access token
+
+            kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+
+            # Perform a query using the authenticated connection
+
+            q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
+
+            # Fetch all results
+
+            q = q.fetchAll()
+
+            # Access the collected matches
+
+            print(q.slots['collectedMatches'].snippet)
+
+        """
+
+        kco = KorAPClient.auth(self, *args, **kwargs)
+        super().__init__(kco)
+        return self
 
     def corpusStats(self, *args, **kwargs):
         """Query the size of the whole corpus or a virtual corpus specified by the vc argument.
