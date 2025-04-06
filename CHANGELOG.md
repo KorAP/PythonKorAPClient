@@ -5,6 +5,7 @@
 - Simplified authorization process for accessing restricted data via the new `auth()` function
 - Fixed issues with tokenized matches in `corpusQuery` results
 - Fixed smoothing constant in `mergeDuplicateCollocates` function
+- Fixed chainability of fetch methods in `corpusQuery`
 
 ## 0.9.0
 
