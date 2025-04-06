@@ -1,5 +1,7 @@
 # Version history
 
+- Fixed chainability of fetch methods in `corpusQuery`
+
 ## 0.9.0
 
 - Updates recommended RKorAPClient version to 0.9.0

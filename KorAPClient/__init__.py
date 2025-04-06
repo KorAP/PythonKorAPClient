@@ -312,7 +312,8 @@ class KorAPQuery(RS4):
         with localconverter(fix_lists_in_dataframes):
             df = res.slots['collectedMatches']
         res.slots['collectedMatches'] = df
-        return res
+        super().__init__(res)
+        return self
 
     def fetchRest(self, *args, **kwargs):
         """Fetch remaining query results
@@ -326,7 +327,8 @@ class KorAPQuery(RS4):
         with localconverter(fix_lists_in_dataframes):
             df = res.slots['collectedMatches']
         res.slots['collectedMatches'] = df
-        return res
+        super().__init__(res)
+        return self
 
     def fetchAll(self, *args, **kwargs):
         """Fetch all query results
@@ -343,5 +345,6 @@ class KorAPQuery(RS4):
         with localconverter(fix_lists_in_dataframes):
             df = res.slots['collectedMatches']
         res.slots['collectedMatches'] = df
-        return res
+        super().__init__(res)
+        return self
 
