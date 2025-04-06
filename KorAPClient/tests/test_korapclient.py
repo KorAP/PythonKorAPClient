@@ -136,6 +136,29 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(min(df['KED.rcpnt'].str.len()), 5)
 
 
+#    def test_authorization(self):
+#        kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
+#        self.assertIsNotNone(kcon.slots['accessToken'])
+
+    def test_chained_fetch_matches(self):
+        q = (
+            self.kcon.corpusQuery("Test", metadataOnly=False)
+            .fetchNext(maxFetch=120)
+            .fetchNext()
+            .fetchNext()
+        )
+        self.assertIn('collectedMatches', q.slots)
+        self.assertEqual(len(q.slots['collectedMatches']), 220)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
+
+    def test_unchained_fetch_matches(self):
+        q =  self.kcon.corpusQuery("Test", metadataOnly=False)
+        q.fetchNext(maxFetch=120)
+        q.fetchNext()
+        q.fetchNext()
+        self.assertIn('collectedMatches', q.slots)
+        self.assertEqual(len(q.slots['collectedMatches']), 220)
+        self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
 
 if __name__ == '__main__':
     unittest.main()
