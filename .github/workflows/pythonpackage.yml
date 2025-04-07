@@ -35,7 +35,9 @@ jobs:
         export R_LIBS_USER=/usr/local/lib/R/site-library
       if: runner.os == 'Linux'
     - name: Install R dependencies
-      run: Rscript -e "install.packages('RKorAPClient')"
+      run: |
+        Rscript -e "install.packages('pak')"
+        Rscript -e "pak::pak('RKorAPClient')"
     - name: Cache R packages on Linux
       uses: actions/cache@v3
       with:
@@ -69,7 +71,8 @@ jobs:
       if: runner.os != 'Windows'
       run: |
         export LD_LIBRARY_PATH=$(python -m rpy2.situation LD_LIBRARY_PATH):${LD_LIBRARY_PATH}
-        pip install pytest
+        python -m ensurepip --upgrade
+        python -m pip install pytest
         pytest KorAPClient/tests  --junitxml=junit/test-results-${{ matrix.python-version }}.xml
     - name: Test with pytest on Windows
       if: runner.os == 'Windows'
