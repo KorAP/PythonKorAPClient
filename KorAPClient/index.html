@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-<meta name="generator" content="pdoc3 0.11.5">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>KorAPClient API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
@@ -183,6 +183,42 @@ def to_str(obj):
             kwargs[&#34;userAgent&#34;] = &#34;Python-KorAP-Client&#34;
         kco = KorAPClient.KorAPConnection(*args, **kwargs)
         super().__init__(kco)
+
+    def auth(self, *args, **kwargs):
+        &#34;&#34;&#34; Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+
+        - **kco** - `KorAPConnection` object
+        - **app_id** - OAuth2 application id. Defaults to the generic KorAP client application id.
+        - **app_secret** - OAuth2 application secret. Used with confidential client applications. Defaults to `NULL`.
+        - **scope** - OAuth2 scope. Defaults to &#34;search match_info&#34;.
+
+        Returns:
+
+            Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots[&#39;accessToken&#39;]`.
+
+        Example:
+
+            # Create a KorAPConnection object without an existing access token
+
+            kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+
+            # Perform a query using the authenticated connection
+
+            q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False)
+
+            # Fetch all results
+
+            q = q.fetchAll()
+
+            # Access the collected matches
+
+            print(q.slots[&#39;collectedMatches&#39;].snippet)
+
+        &#34;&#34;&#34;
+
+        kco = KorAPClient.auth(self, *args, **kwargs)
+        super().__init__(kco)
+        return self
 
     def corpusStats(self, *args, **kwargs):
         &#34;&#34;&#34;Query the size of the whole corpus or a virtual corpus specified by the vc argument.
@@ -380,6 +416,69 @@ def to_str(obj):
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="KorAPClient.KorAPConnection.auth"><code class="name flex">
+<span>def <span class="ident">auth</span></span>(<span>self, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def auth(self, *args, **kwargs):
+    &#34;&#34;&#34; Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.
+
+    - **kco** - `KorAPConnection` object
+    - **app_id** - OAuth2 application id. Defaults to the generic KorAP client application id.
+    - **app_secret** - OAuth2 application secret. Used with confidential client applications. Defaults to `NULL`.
+    - **scope** - OAuth2 scope. Defaults to &#34;search match_info&#34;.
+
+    Returns:
+
+        Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots[&#39;accessToken&#39;]`.
+
+    Example:
+
+        # Create a KorAPConnection object without an existing access token
+
+        kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+
+        # Perform a query using the authenticated connection
+
+        q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False)
+
+        # Fetch all results
+
+        q = q.fetchAll()
+
+        # Access the collected matches
+
+        print(q.slots[&#39;collectedMatches&#39;].snippet)
+
+    &#34;&#34;&#34;
+
+    kco = KorAPClient.auth(self, *args, **kwargs)
+    super().__init__(kco)
+    return self</code></pre>
+</details>
+<div class="desc"><p>Authorize PythonKorAPClient to make KorAP queries and download results on behalf of the user.</p>
+<ul>
+<li><strong>kco</strong> - <code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code> object</li>
+<li><strong>app_id</strong> - OAuth2 application id. Defaults to the generic KorAP client application id.</li>
+<li><strong>app_secret</strong> - OAuth2 application secret. Used with confidential client applications. Defaults to <code>NULL</code>.</li>
+<li><strong>scope</strong> - OAuth2 scope. Defaults to "search match_info".</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<p>Potentially authorized <code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code>|<code>RS4</code> with access token in <code>.slots['accessToken']</code>.</p>
+<h2 id="example">Example</h2>
+<h1 id="create-a-korapconnection-object-without-an-existing-access-token">Create a KorAPConnection object without an existing access token</h1>
+<p>kcon = KorAPConnection(accessToken=None, verbose=True).auth()</p>
+<h1 id="perform-a-query-using-the-authenticated-connection">Perform a query using the authenticated connection</h1>
+<p>q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)</p>
+<h1 id="fetch-all-results">Fetch all results</h1>
+<p>q = q.fetchAll()</p>
+<h1 id="access-the-collected-matches">Access the collected matches</h1>
+<p>print(q.slots['collectedMatches'].snippet)</p></div>
+</dd>
 <dt id="KorAPClient.KorAPConnection.collocationAnalysis"><code class="name flex">
 <span>def <span class="ident">collocationAnalysis</span></span>(<span>self, node, vc='', **kwargs)</span>
 </code></dt>
@@ -784,7 +883,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         with localconverter(fix_lists_in_dataframes):
             df = res.slots[&#39;collectedMatches&#39;]
         res.slots[&#39;collectedMatches&#39;] = df
-        return res
+        super().__init__(res)
+        return self
 
     def fetchRest(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch remaining query results
@@ -798,7 +898,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         with localconverter(fix_lists_in_dataframes):
             df = res.slots[&#39;collectedMatches&#39;]
         res.slots[&#39;collectedMatches&#39;] = df
-        return res
+        super().__init__(res)
+        return self
 
     def fetchAll(self, *args, **kwargs):
         &#34;&#34;&#34;Fetch all query results
@@ -815,7 +916,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
         with localconverter(fix_lists_in_dataframes):
             df = res.slots[&#39;collectedMatches&#39;]
         res.slots[&#39;collectedMatches&#39;] = df
-        return res</code></pre>
+        super().__init__(res)
+        return self</code></pre>
 </details>
 <div class="desc"><p>Query to a KorAP server.</p></div>
 <h3>Ancestors</h3>
@@ -852,7 +954,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     with localconverter(fix_lists_in_dataframes):
         df = res.slots[&#39;collectedMatches&#39;]
     res.slots[&#39;collectedMatches&#39;] = df
-    return res</code></pre>
+    super().__init__(res)
+    return self</code></pre>
 </details>
 <div class="desc"><p>Fetch all query results</p>
 <ul>
@@ -887,7 +990,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     with localconverter(fix_lists_in_dataframes):
         df = res.slots[&#39;collectedMatches&#39;]
     res.slots[&#39;collectedMatches&#39;] = df
-    return res</code></pre>
+    super().__init__(res)
+    return self</code></pre>
 </details>
 <div class="desc"><p>Fetch next couple of query results</p>
 <ul>
@@ -919,7 +1023,8 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
     with localconverter(fix_lists_in_dataframes):
         df = res.slots[&#39;collectedMatches&#39;]
     res.slots[&#39;collectedMatches&#39;] = df
-    return res</code></pre>
+    super().__init__(res)
+    return self</code></pre>
 </details>
 <div class="desc"><p>Fetch remaining query results</p>
 <ul>
@@ -951,6 +1056,7 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
 <li>
 <h4><code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code></h4>
 <ul class="">
+<li><code><a title="KorAPClient.KorAPConnection.auth" href="#KorAPClient.KorAPConnection.auth">auth</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.collocationAnalysis" href="#KorAPClient.KorAPConnection.collocationAnalysis">collocationAnalysis</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.collocationScoreQuery" href="#KorAPClient.KorAPConnection.collocationScoreQuery">collocationScoreQuery</a></code></li>
 <li><code><a title="KorAPClient.KorAPConnection.corpusQuery" href="#KorAPClient.KorAPConnection.corpusQuery">corpusQuery</a></code></li>
@@ -974,7 +1080,7 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>
