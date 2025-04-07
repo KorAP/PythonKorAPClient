@@ -1,54 +1,24 @@
 .install-rkorapclient:
   variables:
-    # Set `CCACHE_BASEDIR` and `CCACHE_DIR` to point `ccache` towards the cached
-    # path on the gitlab-runner. This enables to cache the output of `ccache`
-    # between various runs.
-    CCACHE_BASEDIR: ${CI_PROJECT_DIR}
-    CCACHE_DIR: ${CI_PROJECT_DIR}/ccache
-    # Set `ccache` to `content` to prevent rebuilding of the CI/CD containers to
-    # trigger a recreate of the cache. By using `content` the compiler's `mtime`
-    # is not considered as part of the hash.
-    CCACHE_COMPILERCHECK: "content"
     # Enable caching for `apt-get`.
     APT_CACHE_DIR: ${CI_PROJECT_DIR}/apt-cache
     # Export `noninteractive` frontend to prevent requesting user input
     DEBIAN_FRONTEND: noninteractive
-    R_LIBS_USER: ${CI_PROJECT_DIR}/rlib
 
   cache:
-    key: rkorapclient
+    key: pykorapclient
     paths:
       - apt-cache/
-      - ccache/
-      - rlib/
 
   before_script:
     - source ./ci/section_helper.sh
 
     - start_section install_linux_packages "Installing missing Linux packages"
-    - mkdir -pv $APT_CACHE_DIR ccache $R_LIBS_USER /usr/local/sbin ~/.ccache ~/.R
-    - cp ci/Makevars ~/.R/Makevars
-    - cp ci/ccache.conf ${CI_PROJECT_DIR}/ccache/ccache.conf
-    - cp ci/ccache.conf ~/.ccache/ccache.conf
-    - echo "R_LIBS='$R_LIBS_USER'" > .Renviron
-    - echo "MAKEFLAGS=-j$(nproc)" >> ~/.R/Makevars
-    - echo "MAKE=make -j$(nproc)" >> ~/.R/Makevars
-    - echo "CFLAGS+=-Wno-error=format-security" >> ~/.R/Makevars
-    - echo "CCFLAGS+=-Wformat=0" >> ~/.R/Makevars
+    - mkdir -p $APT_CACHE_DIR
     - apt-get update
-    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" --no-install-recommends software-properties-common dirmngr ccache wget python3-pip libdeflate-dev
-    - wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-    - add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
-    - add-apt-repository -y ppa:c2d4u.team/c2d4u4.0+
-    - grep -E "sudo apt.* install" Readme.md | sed -e 's/.*sudo apt.* install/apt-get install --no-install-recommends -o dir::cache::archives="$APT_CACHE_DIR" -y libharfbuzz-dev libfribidi-dev /g' | sh
-    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" r-cran-ggplot2 r-cran-broom R.cache r-cran-tibble r-cran-magrittr r-cran-tidyr r-cran-dplyr r-cran-lubridate r-cran-jsonlite r-cran-keyring r-cran-httr r-cran-curl r-cran-purrr r-cran-stringr r-cran-urltools r-cran-remotes
-    - ln -s $(which ccache) /usr/local/sbin/gcc
-    - ln -s $(which ccache) /usr/local/sbin/g++
-    - end_section install_linux_packages
-    - start_section installing "Installing RKorAPClient from CRAN"
+    - apt-get install -y -o dir::cache::archives="$APT_CACHE_DIR" python3-pip
+    - start_section installing "Installing RKorAPClient package"
     - export PATH=/usr/local/sbin:$PATH
-    # - export RENV_CONFIG_REPOS_OVERRIDE=https://packagemanager.posit.co/cran/__linux__/$(lsb_release --short --codename)/latest
-    # - echo "options(repos = c(CRAN = \"$RENV_CONFIG_REPOS_OVERRIDE\"))" >> ~/.Rprofile
-    - R -q -e "install.packages(c('RKorAPClient'), dependencies = TRUE)"
+    - R -q -e "install.packages('pak')"
+    - R -q -e "pak::pak('RKorAPClient')"
     - end_section installing
-  script:

@@ -1,18 +1,17 @@
 include:
   local: ci/install-rkorapclient-ci.yml
 
-test-korapclient-on-latest:
+test-korapclient:
   extends: .install-rkorapclient
-  image: ubuntu:latest
+  image: rocker/tidyverse
   cache:
-    key: rkorapclient-ubuntu-stable
+    key: pykorapclient
     paths:
     - apt-cache/
-    - ccache/
-    - rlib/
+
   script:
     - mkdir -p ~/.config/pip
-    - echo -e "[global]\nbreak-system-packages = true" >> ~/.config/pip/pip.conf 
+    - echo -e "[global]\nbreak-system-packages = true" >> ~/.config/pip/pip.conf
+    - python3 -m pip install pytest
     - python3 -m pip install .
     - python3 -m pytest -v
-
