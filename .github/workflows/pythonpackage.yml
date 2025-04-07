@@ -10,7 +10,7 @@ jobs:
       max-parallel: 6
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
+        python-version: ['3.11', '3.13']
         r-version: [release]
         os: [macOS-latest, ubuntu-latest]
     steps:
@@ -26,6 +26,19 @@ jobs:
         r-version: ${{ matrix.r-version }}
         use-public-rspm: true
         cache-version: 2
+    - name: Patch GHA issue with macos - Missing C library
+      shell: bash
+      run: |
+        LIB_ARCHIVES=(\
+          libdeflate-1.23-darwin.20-arm64.tar.xz \
+          zstd-1.5.5-darwin.20-arm64.tar.xz \
+        )
+        for name in "${LIB_ARCHIVES[@]}"
+        do
+            curl -LO https://mac.r-project.org/bin/darwin20/arm64/"${name}"
+            sudo tar xJf "${name}" -C /
+        done
+      if: runner.os == 'macOS'
     - name: Set up package maintainers R on Linux
       run: |
         sudo apt-get update -y
@@ -35,7 +48,9 @@ jobs:
         export R_LIBS_USER=/usr/local/lib/R/site-library
       if: runner.os == 'Linux'
     - name: Install R dependencies
-      run: Rscript -e "install.packages('RKorAPClient')"
+      run: |
+        Rscript -e "install.packages('pak')"
+        Rscript -e "pak::pak('RKorAPClient')"
     - name: Cache R packages on Linux
       uses: actions/cache@v3
       with:
@@ -51,13 +66,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install wheel
-    - name: Install package on Mac and Linux
-      if: runner.os != 'Windows'
-      run: |
-        pip install .
-    - name: Install package on Windows
-      if: runner.os == 'Windows'
+        pip install deflate wheel
+    - name: Install package
       run: |
         pip install rpy2
         pip install .
@@ -69,7 +79,8 @@ jobs:
       if: runner.os != 'Windows'
       run: |
         export LD_LIBRARY_PATH=$(python -m rpy2.situation LD_LIBRARY_PATH):${LD_LIBRARY_PATH}
-        pip install pytest
+        python -m ensurepip --upgrade
+        python -m pip install pytest
         pytest KorAPClient/tests  --junitxml=junit/test-results-${{ matrix.python-version }}.xml
     - name: Test with pytest on Windows
       if: runner.os == 'Windows'
@@ -87,7 +98,7 @@ jobs:
         pdoc KorAPClient --force --html -o build/doc
     - name: Deploy documentation on Linux
       if: runner.os == 'Linux'
-      uses: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@releases/v4
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
@@ -95,7 +106,7 @@ jobs:
         TARGET_FOLDER: doc
     - name: Upload check results
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pytest-results-${{ matrix.python-version }}
         path: junit/test-results-${{ matrix.python-version }}.xml
