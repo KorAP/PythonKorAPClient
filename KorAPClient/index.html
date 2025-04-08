@@ -197,22 +197,23 @@ def to_str(obj):
             Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots[&#39;accessToken&#39;]`.
 
         Example:
-
-            # Create a KorAPConnection object without an existing access token
+            ```
+            ### Create a KorAPConnection object without an existing access token
 
             kcon = KorAPConnection(accessToken=None, verbose=True).auth()
 
-            # Perform a query using the authenticated connection
+            ### Perform a query using the authenticated connection
 
             q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False)
 
-            # Fetch all results
+            ### Fetch all results
 
             q = q.fetchAll()
 
-            # Access the collected matches
+            ### Access the collected matches
 
             print(q.slots[&#39;collectedMatches&#39;].snippet)
+            ```
 
         &#34;&#34;&#34;
 
@@ -437,22 +438,23 @@ def to_str(obj):
         Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots[&#39;accessToken&#39;]`.
 
     Example:
-
-        # Create a KorAPConnection object without an existing access token
+        ```
+        ### Create a KorAPConnection object without an existing access token
 
         kcon = KorAPConnection(accessToken=None, verbose=True).auth()
 
-        # Perform a query using the authenticated connection
+        ### Perform a query using the authenticated connection
 
         q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False)
 
-        # Fetch all results
+        ### Fetch all results
 
         q = q.fetchAll()
 
-        # Access the collected matches
+        ### Access the collected matches
 
         print(q.slots[&#39;collectedMatches&#39;].snippet)
+        ```
 
     &#34;&#34;&#34;
 
@@ -470,14 +472,22 @@ def to_str(obj):
 <h2 id="returns">Returns</h2>
 <p>Potentially authorized <code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code>|<code>RS4</code> with access token in <code>.slots['accessToken']</code>.</p>
 <h2 id="example">Example</h2>
-<h1 id="create-a-korapconnection-object-without-an-existing-access-token">Create a KorAPConnection object without an existing access token</h1>
-<p>kcon = KorAPConnection(accessToken=None, verbose=True).auth()</p>
-<h1 id="perform-a-query-using-the-authenticated-connection">Perform a query using the authenticated connection</h1>
-<p>q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)</p>
-<h1 id="fetch-all-results">Fetch all results</h1>
-<p>q = q.fetchAll()</p>
-<h1 id="access-the-collected-matches">Access the collected matches</h1>
-<p>print(q.slots['collectedMatches'].snippet)</p></div>
+<pre><code>### Create a KorAPConnection object without an existing access token
+
+kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+
+### Perform a query using the authenticated connection
+
+q = kcon.corpusQuery(&quot;Ameisenplage&quot;, metadataOnly=False)
+
+### Fetch all results
+
+q = q.fetchAll()
+
+### Access the collected matches
+
+print(q.slots['collectedMatches'].snippet)
+</code></pre></div>
 </dd>
 <dt id="KorAPClient.KorAPConnection.collocationAnalysis"><code class="name flex">
 <span>def <span class="ident">collocationAnalysis</span></span>(<span>self, node, vc='', **kwargs)</span>
