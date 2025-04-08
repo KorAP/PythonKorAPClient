@@ -133,9 +133,11 @@ class KorAPConnection(RS4):
 
         Example:
             ```
+            from KorAPClient import KorAPConnection, NULL
+
             ### Create a KorAPConnection object without an existing access token
 
-            kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+            kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
 
             ### Perform a query using the authenticated connection
 
