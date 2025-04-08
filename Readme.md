@@ -54,7 +54,7 @@ py -m pip install KorAPClient -U
 ```
 
 ## Documentation
-The core classes and methods to access the KorAP API are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/doc/KorAPClient/).
+The core classes and methods to access the KorAP API are documented in the [KorAPClient API documentation](https://korap.github.io/PythonKorAPClient/KorAPClient/).
 For additional, mostly static helper functions, please refer to the [Reference Manual of RKorAPClient](https://cran.r-project.org/web/packages/RKorAPClient/RKorAPClient.pdf) for now. 
 For translating R syntax to Python and vice versa, refer to the [rpy2 Documentation](https://rpy2.github.io/doc/latest/html/index.html).
 
