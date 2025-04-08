@@ -132,22 +132,23 @@ class KorAPConnection(RS4):
             Potentially authorized `KorAPConnection`|`RS4` with access token in `.slots['accessToken']`.
 
         Example:
-
-            # Create a KorAPConnection object without an existing access token
+            ```
+            ### Create a KorAPConnection object without an existing access token
 
             kcon = KorAPConnection(accessToken=None, verbose=True).auth()
 
-            # Perform a query using the authenticated connection
+            ### Perform a query using the authenticated connection
 
             q = kcon.corpusQuery("Ameisenplage", metadataOnly=False)
 
-            # Fetch all results
+            ### Fetch all results
 
             q = q.fetchAll()
 
-            # Access the collected matches
+            ### Access the collected matches
 
             print(q.slots['collectedMatches'].snippet)
+            ```
 
         """
 
