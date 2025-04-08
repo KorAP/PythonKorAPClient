@@ -198,9 +198,11 @@ def to_str(obj):
 
         Example:
             ```
+            from KorAPClient import KorAPConnection, NULL
+
             ### Create a KorAPConnection object without an existing access token
 
-            kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+            kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
 
             ### Perform a query using the authenticated connection
 
@@ -439,9 +441,11 @@ def to_str(obj):
 
     Example:
         ```
+        from KorAPClient import KorAPConnection, NULL
+
         ### Create a KorAPConnection object without an existing access token
 
-        kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+        kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
 
         ### Perform a query using the authenticated connection
 
@@ -472,9 +476,11 @@ def to_str(obj):
 <h2 id="returns">Returns</h2>
 <p>Potentially authorized <code><a title="KorAPClient.KorAPConnection" href="#KorAPClient.KorAPConnection">KorAPConnection</a></code>|<code>RS4</code> with access token in <code>.slots['accessToken']</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code>### Create a KorAPConnection object without an existing access token
+<pre><code>from KorAPClient import KorAPConnection, NULL
 
-kcon = KorAPConnection(accessToken=None, verbose=True).auth()
+### Create a KorAPConnection object without an existing access token
+
+kcon = KorAPConnection(accessToken=NULL, verbose=True).auth()
 
 ### Perform a query using the authenticated connection
 
