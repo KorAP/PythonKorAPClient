@@ -1,5 +1,7 @@
 # Version history
 
+- Fixed NULL warning in fetch functions
+
 ## 1.0.0
 
 - Simplified authorization process for accessing restricted data via the new `auth()` function

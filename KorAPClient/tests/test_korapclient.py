@@ -160,5 +160,17 @@ class TestKorAPClient(unittest.TestCase):
         self.assertEqual(len(q.slots['collectedMatches']), 220)
         self.assertIsInstance(q.slots['collectedMatches']['tokens.match'].iloc[0], str)
 
+    def test_null_strings_are_handled(self):
+        q = self.kcon.corpusQuery("Der", vc="corpusSigle=WPD17", metadataOnly=False).fetchNext()
+        matches = q.slots['collectedMatches']
+        self.assertFalse(
+            matches['tokens.left'].str.contains("rpy2.rinterface_lib.sexp.NULLType", na=False).any(),
+            "The string 'rpy2.rinterface_lib.sexp.NULLType' was found in tokens.left!"
+        )
+        self.assertFalse(
+            matches['tokens.right'].str.contains("rpy2.rinterface_lib.sexp.NULLType", na=False).any(),
+            "The string 'rpy2.rinterface_lib.sexp.NULLType' was found in tokens.right!"
+        )
+
 if __name__ == '__main__':
     unittest.main()

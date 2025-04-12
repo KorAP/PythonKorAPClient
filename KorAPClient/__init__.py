@@ -35,8 +35,13 @@ def _rpy2py_robject(listObject):
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
 
-fix_lists_in_dataframes = robjects.default_converter
+fix_null_types = robjects.default_converter
 
+@fix_null_types.rpy2py.register(NULLType)
+def to_str(obj):
+    return ""
+
+fix_lists_in_dataframes = robjects.default_converter
 
 @fix_lists_in_dataframes.rpy2py.register(StrSexpVector)
 def to_str(obj):
