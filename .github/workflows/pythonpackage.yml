@@ -26,11 +26,17 @@ jobs:
         r-version: ${{ matrix.r-version }}
         use-public-rspm: true
         cache-version: 2
-    - name: Set env commands (POSIX)
-      if: "!startsWith(matrix.os, 'windows')"
+    - name: Set env commands (Linux)
+      if: "startsWith(matrix.os, 'linux')"
       run: |
           echo "VENV_ACTIVATE=source pyenv_base/bin/activate" >> $GITHUB_ENV
-          echo "LD_LIBRARY_PATH=$(dirname $(find / -name libR.so)):${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$(dirname $(find / -name libR.so  2> /dev/null)):${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+          echo "R_LIBRARY=export LD_LIBRARY_PATH=$(python -m rpy2.situation LD_LIBRARY_PATH):${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+    - name: Set env commands (POSIX)
+      if: "startsWith(matrix.os, 'maxos')"
+      run: |
+          echo "VENV_ACTIVATE=source pyenv_base/bin/activate" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$(dirname $(find / -name libR.dylib 2> /dev/null)):${LD_LIBRARY_PATH}" >> $GITHUB_ENV
           echo "R_LIBRARY=export LD_LIBRARY_PATH=$(python -m rpy2.situation LD_LIBRARY_PATH):${LD_LIBRARY_PATH}" >> $GITHUB_ENV
     - name: Set virtualenv activation command (Windows)
       if: startsWith(matrix.os, 'windows')
