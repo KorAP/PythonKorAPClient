@@ -1,6 +1,5 @@
 # Version history
 
-- Fixed asyncio_default_fixture_loop_scope warning in tests
 - Fixed NULL warning in fetch functions
 
 ## 1.0.0
