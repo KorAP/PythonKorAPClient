@@ -1,5 +1,7 @@
 # Version history
 
+## 1.0.1
+
 - Fixed NULL warning in fetch functions
 
 ## 1.0.0
