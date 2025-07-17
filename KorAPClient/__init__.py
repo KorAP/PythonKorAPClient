@@ -16,7 +16,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "1.0.0"
+CURRENT_R_PACKAGE_VERSION = "1.1.0"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):

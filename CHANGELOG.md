@@ -1,5 +1,9 @@
 # Version history
 
+## 1.1.0
+
+- Updates recommended RKorAPClient version to 1.1.0
+
 ## 1.0.1
 
 - Fixed NULL warning in fetch functions
