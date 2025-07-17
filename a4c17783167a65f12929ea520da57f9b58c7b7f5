@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29469a71_0286c642",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-07-17T13:39:57Z",
+      "side": 1,
+      "message": "Please check if `pip install .` prints `Successfully installed KorAPClient-1.1.0`. For some reason for me it said `Successfully installed KorAPClient-0.8.1` until I set `__version__` explicitly in `__init__.py`, but maybe just because of some leftovers.",
+      "revId": "a4c17783167a65f12929ea520da57f9b58c7b7f5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a54252b7_f12dbaee",
+        "filename": "CHANGELOG.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-07-17T13:39:57Z",
+      "side": 1,
+      "message": "Please add the bullet pints from here https://github.com/KorAP/RKorAPClient/blob/master/NEWS.md#rkorapclient-110\n\nexcept maybe the documentation, which is not automatically imported, I think.",
+      "revId": "a4c17783167a65f12929ea520da57f9b58c7b7f5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
