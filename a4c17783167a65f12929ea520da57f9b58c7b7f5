@@ -33,6 +33,24 @@
       "message": "Please add the bullet pints from here https://github.com/KorAP/RKorAPClient/blob/master/NEWS.md#rkorapclient-110\n\nexcept maybe the documentation, which is not automatically imported, I think.",
       "revId": "a4c17783167a65f12929ea520da57f9b58c7b7f5",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "958b9d42_ebdd06c4",
+        "filename": "CHANGELOG.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-07-17T14:37:36Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "a54252b7_f12dbaee",
+      "revId": "a4c17783167a65f12929ea520da57f9b58c7b7f5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
