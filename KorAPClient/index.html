@@ -933,7 +933,53 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
             df = res.slots[&#39;collectedMatches&#39;]
         res.slots[&#39;collectedMatches&#39;] = df
         super().__init__(res)
-        return self</code></pre>
+        return self
+
+    def fetchAnnotations(self, *args, **kwargs):
+            &#34;&#34;&#34;Fetches and parses linguistic annotations for the collected matches.
+
+            This method enriches the `collectedMatches` DataFrame with additional columns
+            containing linguistic annotations like lemma, part-of-speech (POS), and
+            morphology for each token in the match and its context.
+
+            Args:
+                foundry (str, optional): The foundry (annotation layer) to fetch.
+                                        Defaults to &#34;tt&#34; (TreeTagger).
+                overwrite (bool, optional): If True, existing annotation columns will be
+                                            overwritten. Defaults to False.
+                verbose (bool, optional): If True, prints progress information. Defaults
+                                        to the verbosity setting of the
+                                        KorAPConnection object.
+                *args: Positional arguments passed to the underlying R function.
+                **kwargs: Keyword arguments passed to the underlying R function.
+
+            Returns:
+                KorAPQuery: A new KorAPQuery object with the `collectedMatches` DataFrame
+                            updated to include the fetched annotations.
+
+            Example:
+                ```
+                from KorAPClient import KorAPConnection
+
+                # Authentication might be required for snippets and annotations
+                kcon = KorAPConnection(verbose=True).auth()
+
+                # Perform a query and fetch all matches
+                q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False).fetchAll()
+
+                # Fetch annotations for the matches
+                q_annotated = q.fetchAnnotations()
+
+                # Display the collected matches with new annotation columns
+                print(q_annotated.slots[&#39;collectedMatches&#39;][[&#39;snippet&#39;, &#39;lemma.left&#39;, &#39;lemma.match&#39;, &#39;lemma.right&#39;]].head())
+                ```
+            &#34;&#34;&#34;
+            res = KorAPClient.fetchAnnotations(self, *args, **kwargs)
+            with localconverter(fix_lists_in_dataframes):
+                df = res.slots[&#39;collectedMatches&#39;]
+            res.slots[&#39;collectedMatches&#39;] = df
+            super().__init__(res)
+            return self</code></pre>
 </details>
 <div class="desc"><p>Query to a KorAP server.</p></div>
 <h3>Ancestors</h3>
@@ -981,6 +1027,103 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
 <p><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></p>
 <h2 id="example">Example</h2>
 <p>See <code><a title="KorAPClient.KorAPConnection.corpusQuery" href="#KorAPClient.KorAPConnection.corpusQuery">KorAPConnection.corpusQuery()</a></code>.</p></div>
+</dd>
+<dt id="KorAPClient.KorAPQuery.fetchAnnotations"><code class="name flex">
+<span>def <span class="ident">fetchAnnotations</span></span>(<span>self, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fetchAnnotations(self, *args, **kwargs):
+        &#34;&#34;&#34;Fetches and parses linguistic annotations for the collected matches.
+
+        This method enriches the `collectedMatches` DataFrame with additional columns
+        containing linguistic annotations like lemma, part-of-speech (POS), and
+        morphology for each token in the match and its context.
+
+        Args:
+            foundry (str, optional): The foundry (annotation layer) to fetch.
+                                    Defaults to &#34;tt&#34; (TreeTagger).
+            overwrite (bool, optional): If True, existing annotation columns will be
+                                        overwritten. Defaults to False.
+            verbose (bool, optional): If True, prints progress information. Defaults
+                                    to the verbosity setting of the
+                                    KorAPConnection object.
+            *args: Positional arguments passed to the underlying R function.
+            **kwargs: Keyword arguments passed to the underlying R function.
+
+        Returns:
+            KorAPQuery: A new KorAPQuery object with the `collectedMatches` DataFrame
+                        updated to include the fetched annotations.
+
+        Example:
+            ```
+            from KorAPClient import KorAPConnection
+
+            # Authentication might be required for snippets and annotations
+            kcon = KorAPConnection(verbose=True).auth()
+
+            # Perform a query and fetch all matches
+            q = kcon.corpusQuery(&#34;Ameisenplage&#34;, metadataOnly=False).fetchAll()
+
+            # Fetch annotations for the matches
+            q_annotated = q.fetchAnnotations()
+
+            # Display the collected matches with new annotation columns
+            print(q_annotated.slots[&#39;collectedMatches&#39;][[&#39;snippet&#39;, &#39;lemma.left&#39;, &#39;lemma.match&#39;, &#39;lemma.right&#39;]].head())
+            ```
+        &#34;&#34;&#34;
+        res = KorAPClient.fetchAnnotations(self, *args, **kwargs)
+        with localconverter(fix_lists_in_dataframes):
+            df = res.slots[&#39;collectedMatches&#39;]
+        res.slots[&#39;collectedMatches&#39;] = df
+        super().__init__(res)
+        return self</code></pre>
+</details>
+<div class="desc"><p>Fetches and parses linguistic annotations for the collected matches.</p>
+<p>This method enriches the <code>collectedMatches</code> DataFrame with additional columns
+containing linguistic annotations like lemma, part-of-speech (POS), and
+morphology for each token in the match and its context.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>foundry</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The foundry (annotation layer) to fetch.
+Defaults to "tt" (TreeTagger).</dd>
+<dt><strong><code>overwrite</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, existing annotation columns will be
+overwritten. Defaults to False.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, prints progress information. Defaults
+to the verbosity setting of the
+KorAPConnection object.</dd>
+<dt><strong><code>*args</code></strong></dt>
+<dd>Positional arguments passed to the underlying R function.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Keyword arguments passed to the underlying R function.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></dt>
+<dd>A new KorAPQuery object with the <code>collectedMatches</code> DataFrame
+updated to include the fetched annotations.</dd>
+</dl>
+<h2 id="example">Example</h2>
+<pre><code>from KorAPClient import KorAPConnection
+
+# Authentication might be required for snippets and annotations
+kcon = KorAPConnection(verbose=True).auth()
+
+# Perform a query and fetch all matches
+q = kcon.corpusQuery(&quot;Ameisenplage&quot;, metadataOnly=False).fetchAll()
+
+# Fetch annotations for the matches
+q_annotated = q.fetchAnnotations()
+
+# Display the collected matches with new annotation columns
+print(q_annotated.slots['collectedMatches'][['snippet', 'lemma.left', 'lemma.match', 'lemma.right']].head())
+</code></pre></div>
 </dd>
 <dt id="KorAPClient.KorAPQuery.fetchNext"><code class="name flex">
 <span>def <span class="ident">fetchNext</span></span>(<span>self, *args, **kwargs)</span>
@@ -1086,6 +1229,7 @@ $ kcon.textMetadata([&quot;WUD17/A97/08542&quot;, &quot;WUD17/B96/57558&quot;, &
 <h4><code><a title="KorAPClient.KorAPQuery" href="#KorAPClient.KorAPQuery">KorAPQuery</a></code></h4>
 <ul class="">
 <li><code><a title="KorAPClient.KorAPQuery.fetchAll" href="#KorAPClient.KorAPQuery.fetchAll">fetchAll</a></code></li>
+<li><code><a title="KorAPClient.KorAPQuery.fetchAnnotations" href="#KorAPClient.KorAPQuery.fetchAnnotations">fetchAnnotations</a></code></li>
 <li><code><a title="KorAPClient.KorAPQuery.fetchNext" href="#KorAPClient.KorAPQuery.fetchNext">fetchNext</a></code></li>
 <li><code><a title="KorAPClient.KorAPQuery.fetchRest" href="#KorAPClient.KorAPQuery.fetchRest">fetchRest</a></code></li>
 </ul>
