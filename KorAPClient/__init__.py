@@ -16,7 +16,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "1.1.0"
+CURRENT_R_PACKAGE_VERSION = "1.2.1"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -395,3 +395,48 @@ class KorAPQuery(RS4):
         super().__init__(res)
         return self
 
+    def fetchAnnotations(self, *args, **kwargs):
+            """Fetches and parses linguistic annotations for the collected matches.
+
+            This method enriches the `collectedMatches` DataFrame with additional columns
+            containing linguistic annotations like lemma, part-of-speech (POS), and
+            morphology for each token in the match and its context.
+
+            Args:
+                foundry (str, optional): The foundry (annotation layer) to fetch.
+                                        Defaults to "tt" (TreeTagger).
+                overwrite (bool, optional): If True, existing annotation columns will be
+                                            overwritten. Defaults to False.
+                verbose (bool, optional): If True, prints progress information. Defaults
+                                        to the verbosity setting of the
+                                        KorAPConnection object.
+                *args: Positional arguments passed to the underlying R function.
+                **kwargs: Keyword arguments passed to the underlying R function.
+
+            Returns:
+                KorAPQuery: A new KorAPQuery object with the `collectedMatches` DataFrame
+                            updated to include the fetched annotations.
+
+            Example:
+                ```
+                from KorAPClient import KorAPConnection
+
+                # Authentication might be required for snippets and annotations
+                kcon = KorAPConnection(verbose=True).auth()
+
+                # Perform a query and fetch all matches
+                q = kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchAll()
+
+                # Fetch annotations for the matches
+                q_annotated = q.fetchAnnotations()
+
+                # Display the collected matches with new annotation columns
+                print(q_annotated.slots['collectedMatches'][['snippet', 'lemma.left', 'lemma.match', 'lemma.right']].head())
+                ```
+            """
+            res = KorAPClient.fetchAnnotations(self, *args, **kwargs)
+            with localconverter(fix_lists_in_dataframes):
+                df = res.slots['collectedMatches']
+            res.slots['collectedMatches'] = df
+            super().__init__(res)
+            return self

@@ -1,5 +1,10 @@
 # Version history
 
+## 1.2.1
+
+- Updates recommended RKorAPClient version to 1.2.1
+- fetchAnnotations() method added to KorAPQuery class, to fetch annotations for all collected matches
+
 ## 1.1.0
 
 - Updates recommended RKorAPClient version to 1.1.0

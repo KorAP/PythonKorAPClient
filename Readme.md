@@ -157,6 +157,25 @@ example:
   python -m KorAPClient -v --query "Hello World" "Hallo Welt" --vc "pubDate in 2017" "pubDate in 2018" "pubDate in 2019"
 ```
 
+### Querying and fetching annotations
+To fetch the annotations for all matches in a KorAPQuery object, use the fetchAnnotations() method (defaults to "tt" (TreeTagger) as foundry):
+```python
+from KorAPClient import KorAPConnection
+
+# Authentication might be required for snippets and annotations
+kcon = KorAPConnection(verbose=True).auth()
+
+# Perform a query and fetch all matches
+q = kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchAll()
+
+# Fetch annotations for the matches
+q = q.fetchAnnotations()
+
+# Display the collected matches with new annotation columns
+q.slots['collectedMatches'][['snippet', 'lemma.left', 'lemma.match', 'lemma.right']].head()
+```
+The annotations (here: lemmas) are stored in `q.slots['collectedMatches'][['lemma.left', 'lemma.match', 'lemma.right']]`.
+
 ### Accessed API Services
 By using the KorAPClient you agree to the respective terms of use of the accessed KorAP API services which will be printed upon opening a connection.
 
