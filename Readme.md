@@ -134,6 +134,25 @@ print(results[['collocate', 'logDice', 'pmi', 'll']].head(10).round(2).to_markdo
 |  9 | [Beziehung](https://korap.ids-mannheim.de/?q=Beziehung%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                      |      6.92 |  8.29 |  37723.54 |
 | 10 | [Relation](https://korap.ids-mannheim.de/?q=Relation%20focus%28in%20%5btt%2fp%3dNN%5d%20%7b%5btt%2fl%3dsetzen%5d%7d%29&ql=poliqarp)                        |      6.64 | 10.24 |  17105.84 |
 
+### Querying and fetching annotations
+To fetch the annotations for all matches in a KorAPQuery object, use the fetchAnnotations() method (defaults to "tt" (TreeTagger) as foundry):
+```python
+from KorAPClient import KorAPConnection
+
+# Authentication might be required for snippets and annotations
+kcon = KorAPConnection(verbose=True).auth()
+
+# Perform a query and fetch all matches
+q = kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchAll()
+
+# Fetch annotations for the matches
+q = q.fetchAnnotations()
+
+# Display the collected matches with new annotation columns
+q.slots['collectedMatches'][['snippet', 'lemma.left', 'lemma.match', 'lemma.right']].head()
+```
+The annotations (here: lemmas) are stored in `q.slots['collectedMatches'][['lemma.left', 'lemma.match', 'lemma.right']]`.
+
 ## Command Line Invocation
 The Python KorAP client can also be called from the command line and shell scripts:
 ```shell script
@@ -156,25 +175,6 @@ optional arguments:
 example:
   python -m KorAPClient -v --query "Hello World" "Hallo Welt" --vc "pubDate in 2017" "pubDate in 2018" "pubDate in 2019"
 ```
-
-### Querying and fetching annotations
-To fetch the annotations for all matches in a KorAPQuery object, use the fetchAnnotations() method (defaults to "tt" (TreeTagger) as foundry):
-```python
-from KorAPClient import KorAPConnection
-
-# Authentication might be required for snippets and annotations
-kcon = KorAPConnection(verbose=True).auth()
-
-# Perform a query and fetch all matches
-q = kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchAll()
-
-# Fetch annotations for the matches
-q = q.fetchAnnotations()
-
-# Display the collected matches with new annotation columns
-q.slots['collectedMatches'][['snippet', 'lemma.left', 'lemma.match', 'lemma.right']].head()
-```
-The annotations (here: lemmas) are stored in `q.slots['collectedMatches'][['lemma.left', 'lemma.match', 'lemma.right']]`.
 
 ### Accessed API Services
 By using the KorAPClient you agree to the respective terms of use of the accessed KorAP API services which will be printed upon opening a connection.
