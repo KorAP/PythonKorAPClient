@@ -21,7 +21,7 @@ via [rpy2](https://rpy2.github.io/). The latter also automatically translates be
 
 ```shell script
 #### Debian / Ubuntu
-sudo apt install r-base-dev r-cran-rcpp r-cran-cpp11 libcurl4-gnutls-dev libxml2-dev libsodium-dev libsecret-1-dev libfontconfig1-dev libssl-dev libv8-dev python3-dev python3-pip python3-rpy2 python3-pandas python3-pytest libdeflate-dev r-cran-rcpparmadillo
+sudo apt install r-base-dev r-cran-rcpp r-cran-cpp11 libcurl4-gnutls-dev libxml2-dev libsodium-dev libsecret-1-dev libfontconfig1-dev libssl-dev python3-dev python3-pip python3-rpy2 python3-pandas python3-pytest libdeflate-dev r-cran-rcpparmadillo
 
 #### Fedora / CentOS / RHEL
 sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
@@ -38,6 +38,8 @@ install.packages('RKorAPClient', repos='https://cloud.r-project.org/')
 or install RKorAPClient from the package installation menu entry.
 
 #### 3. Install the Python package
+
+PythonKorAPClient requires Python 3.10 or newer.
 
 On Linux and macOS:
 
@@ -75,6 +77,38 @@ KorAPConnection(verbose=True) \
 |  1 | "Wissenschaftler.*" |         942053 |      | https://korap.ids-mannheim.de/?q=%22Wissenschaftler.%2a%22&ql=poliqarp | 1080268 | 0.872055 |   0.871423 |    0.872684 |
 |  2 | "Wissenschafter.*"  |         138215 |      | https://korap.ids-mannheim.de/?q=%22Wissenschafter.%2a%22&ql=poliqarp  | 1080268 | 0.127945 |   0.127316 |    0.128577 |
 
+
+### Labelling virtual corpora
+
+If you pass a dict of virtual corpus definitions to `frequencyQuery`, `corpusStats`, `collocationScoreQuery` or `collocationAnalysis`,
+its keys are used as labels in a `label` column:
+
+```python
+from KorAPClient import KorAPConnection
+
+vc = {"Germany": "pubPlaceKey=DE", "Switzerland": "pubPlaceKey=CH"}
+KorAPConnection().frequencyQuery("Ameisenplage", vc=vc)[["query", "label", "totalResults"]]
+```
+
+|    | query        | label       |   totalResults |
+|---:|:-------------|:------------|---------------:|
+|  1 | Ameisenplage | Germany     |            178 |
+|  2 | Ameisenplage | Switzerland |             27 |
+
+In general, Python dicts are passed to R as named vectors (or named lists, if the values are not all strings).
+
+### Caching results with `cacheAs`
+
+`frequencyQuery`, `corpusStats`, `collocationScoreQuery`, `collocationAnalysis` and `textMetadata` accept a `cacheAs` argument
+with the path to an RDS file. If the file exists and records the same call, the result is read from it instead of contacting the server;
+otherwise the query is run and its result stored there. This keeps analyses reproducible, even once the corpus has grown:
+
+```python
+from KorAPClient import KorAPConnection
+
+kcon = KorAPConnection(verbose=True)
+df = kcon.frequencyQuery("Ameisenplage", vc=["pubDate in 2010", "pubDate in 2020"], cacheAs="ameisenplage.rds")
+```
 
 ### Authorization
 
@@ -183,7 +217,7 @@ By using the KorAPClient you agree to the respective terms of use of the accesse
 
 **Authors**: [Marc Kupietz](https://www.ids-mannheim.de/digspra/personal/kupietz/), [Tim Feldmüller](https://www.ids-mannheim.de/digspra/personal/feldmueller)
 
-Copyright (c) 2025, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
+Copyright (c) 2026, [Leibniz Institute for the German Language](http://www.ids-mannheim.de/), Mannheim, Germany
 
 This package is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Leibniz Institute for the German Language

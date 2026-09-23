@@ -1,5 +1,26 @@
 # Version history
 
+## 1.4.1
+
+- Updates recommended RKorAPClient version to 1.4.1
+- Requires Python >= 3.10 (support for Python 3.7–3.9 dropped, Python 3.14 added)
+- `libv8` is no longer needed as a system dependency
+- Python dicts are now converted to named R vectors (or named lists), e.g. `vc={"Germany": "pubPlaceKey=DE", "Switzerland": "pubPlaceKey=CH"}` to label virtual corpora
+- Documentation and tests updated for the new features listed below, including labelling virtual corpora (`label` column) and caching results with `cacheAs`
+- follows the DeReKo-KorAP-2026-II release: `corpusQuery()` now fetches the new `dmozDomain` and `wikiDomain` metadata fields, which replaced `textClass` ([RKorAPClient #31](https://github.com/KorAP/RKorAPClient/issues/31))
+- long running searches are no longer aborted after 10 minutes; only the connection's `timeout` applies
+- `corpusQuery()` and `frequencyQuery()` now warn about failed or incomplete (`timeExceeded`) searches instead of silently reporting 0 or too few hits; their results carry a new `queryDuration` column
+- clearer verbose output: series of queries or virtual corpora are logged as an aligned table, with more accurate ETAs
+- `cacheAs` parameter for transparent result caching, now supported by `collocationAnalysis()`, `frequencyQuery()`, `corpusStats()`, `collocationScoreQuery()` and `textMetadata()`
+- names of a named `vc` vector are consistently used as labels by `frequencyQuery()`, `corpusStats()` and `collocationScoreQuery()`
+- **changed `logDice` values**: now computed as defined by Rychlý (2008), so values are comparable to Sketch Engine and other tools
+- **changed `ll()` values**: contingency table now scales the sample size and both marginals with the window size (Evert 2004)
+- `collocationAnalysis()` discards collocates occurring less often than expected by chance (new `minObservedExpectedRatio` parameter, default 1; set to 0 for the previous behaviour)
+- *experimental* support for comparing collocation analyses across multiple (optionally labelled) vcs
+- `collocationScoreQuery()` accepts a vector of collocates
+- fixed collocation analysis dropping snippets with certain markup shapes, e.g. sentence-bounded `contains(<base/s=s>, ...)` queries ([RKorAPClient #14](https://github.com/KorAP/RKorAPClient/issues/14))
+- fixed score threshold in recursive collocation analysis
+
 ## 1.2.1
 
 - Updates recommended RKorAPClient version to 1.2.1

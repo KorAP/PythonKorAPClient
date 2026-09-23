@@ -1,6 +1,10 @@
+import os
+import tempfile
 import unittest
 
-from KorAPClient import KorAPConnection, NULL
+from KorAPClient import KorAPClient, KorAPConnection, NULL
+
+LABELLED_VCS = {'Germany': 'pubPlaceKey=DE', 'Switzerland': 'pubPlaceKey=CH'}
 
 
 class TestKorAPClient(unittest.TestCase):
@@ -10,6 +14,12 @@ class TestKorAPClient(unittest.TestCase):
     def test_query(self):
         q = self.kcon.corpusQuery("Test")
         self.assertEqual(q.slots['class'][0], 'KorAPQuery')
+
+    def test_query_fetches_topic_domains_by_default(self):
+        q = self.kcon.corpusQuery("Ameisenplage", vc="corpusSigle=/W.D17/").fetchNext()
+        matches = q.slots['collectedMatches']
+        self.assertIn('dmozDomain', matches.columns)
+        self.assertIn('wikiDomain', matches.columns)
 
     def test_query_with_snippets(self):
         q = self.kcon.corpusQuery("Ameisenplage", metadataOnly=False).fetchNext()
@@ -46,6 +56,25 @@ class TestKorAPClient(unittest.TestCase):
         self.assertGreater(df['totalResults'].iloc[0], 10)
         self.assertGreater(10000, df['totalResults'].iloc[0])
 
+    def test_frequency_query_reports_query_duration(self):
+        df = self.kcon.frequencyQuery("Ameisenplage")
+        self.assertIn('queryDuration', df.columns)
+        self.assertGreaterEqual(df['queryDuration'].iloc[0], 0)
+
+    def test_frequency_query_with_named_vc(self):
+        df = self.kcon.frequencyQuery("Ameisenplage", vc=LABELLED_VCS)
+        self.assertEqual(list(df['label']), ['Germany', 'Switzerland'])
+        self.assertEqual(list(df['vc']), ['pubPlaceKey=DE', 'pubPlaceKey=CH'])
+        self.assertGreater(df['totalResults'].iloc[0], df['totalResults'].iloc[1])
+
+    def test_frequency_query_cache_as(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_file = os.path.join(tmp, "freq")
+            df1 = self.kcon.frequencyQuery("Ameisenplage", cacheAs=cache_file)
+            self.assertTrue(os.path.exists(cache_file + ".rds"))
+            df2 = self.kcon.frequencyQuery("Ameisenplage", cacheAs=cache_file)
+            self.assertEqual(df1['totalResults'].iloc[0], df2['totalResults'].iloc[0])
+
     def test_collocation_score_query(self):
         df = self.kcon.collocationScoreQuery("Ameisenplage", "heimgesucht", leftContextSize=0, rightContextSize=1)
         self.assertEqual(df['rightContextSize'].iloc[0], 1)
@@ -60,6 +89,36 @@ class TestKorAPClient(unittest.TestCase):
                                            exactFrequencies=False)
         self.assertEqual(df['rightContextSize'].iloc[0], 0)
         self.assertGreater(df['O'].iloc[0], df['E'].iloc[0])
+
+    def test_collocation_analysis_min_observed_expected_ratio(self):
+        kwargs = dict(vc="corpusSigle=/W.D17/", leftContextSize=1, rightContextSize=1,
+                      searchHitsSampleLimit=50, topCollocatesLimit=20, exactFrequencies=False)
+        unfiltered = self.kcon.collocationAnalysis("Newstickeritis", minObservedExpectedRatio=0, **kwargs)
+        filtered = self.kcon.collocationAnalysis("Newstickeritis", minObservedExpectedRatio=5000, **kwargs)
+        self.assertGreater(len(unfiltered), len(filtered))
+        self.assertTrue((filtered['O'] >= 5000 * filtered['E']).all())
+
+    def test_collocation_analysis_cache_as(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_file = os.path.join(tmp, "ca.rds")
+            kwargs = dict(vc="corpusSigle=/W.D17/", leftContextSize=1, rightContextSize=0,
+                          searchHitsSampleLimit=1, topCollocatesLimit=1, exactFrequencies=False,
+                          cacheAs=cache_file)
+            df1 = self.kcon.collocationAnalysis("focus([tt/p=ADJA] {Newstickeritis})", **kwargs)
+            self.assertTrue(os.path.exists(cache_file))
+            df2 = self.kcon.collocationAnalysis("focus([tt/p=ADJA] {Newstickeritis})", **kwargs)
+            self.assertEqual(list(df1['collocate']), list(df2['collocate']))
+
+    def test_collocation_score_query_with_labelled_vcs(self):
+        df = self.kcon.collocationScoreQuery("Ameisenplage", "heimgesucht", vc=LABELLED_VCS,
+                                             leftContextSize=0, rightContextSize=1)
+        self.assertEqual(list(df['label']), ['Germany', 'Switzerland'])
+
+    def test_collocation_score_query_with_score_functions_dict(self):
+        df = self.kcon.collocationScoreQuery("Ameisenplage", "heimgesucht", leftContextSize=0, rightContextSize=1,
+                                             scoreFunctions={'pmi': KorAPClient.pmi})
+        self.assertIn('pmi', df.columns)
+        self.assertNotIn('logDice', df.columns)
 
     def test_collocation_score_query_multi_collocates(self):
         df = self.kcon.collocationScoreQuery("Ameisenplage", ["einer", "heimgesucht"], leftContextSize=1,
@@ -79,6 +138,10 @@ class TestKorAPClient(unittest.TestCase):
     def test_corpus_stats_with_vc_list(self):
         tokens = self.kcon.corpusStats(vc=['pubPlaceKey=DE', 'pubPlaceKey=CH'])['tokens']
         self.assertGreater(tokens.iloc[0], tokens.iloc[1])
+
+    def test_corpus_stats_with_named_vc(self):
+        df = self.kcon.corpusStats(vc=LABELLED_VCS)
+        self.assertEqual(list(df['label']), ['Germany', 'Switzerland'])
 
     def test_textMetadata(self):
         df = self.kcon.textMetadata(["WUD17/A97/08542", "WUD17/B96/57558", "WUD17/A97/08541"])
@@ -105,7 +168,7 @@ class TestKorAPClient(unittest.TestCase):
         self.assertTrue(any('reine' in context for context in left_contexts))
         
         right_contexts = matches['tokens.right']
-        self.assertTrue(any('Begriff' in context for context in right_contexts))
+        self.assertTrue(any('Frachter' in context for context in right_contexts))
     
     def test_match_start_and_end(self):
         q = self.kcon.corpusQuery("focus([tt/p=ADJA] {Newstickeritis})", vc="corpusSigle=/W.D17/", metadataOnly=False)

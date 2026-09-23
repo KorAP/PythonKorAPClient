@@ -1,6 +1,6 @@
 [project]
 name = "KorAPClient"
-version = "1.2.1"
+version = "1.4.1"
 description = "Client package to access KorAP's web service API"
 authors = [
     {name = "Marc Kupietz",email = "kupietz@ids-mannheim.de"},
@@ -13,7 +13,7 @@ dependencies = [
     "pandas>=1.2",
     "rpy2>=3.3",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 readme = "Readme.md"
 license = {text = "BSD"}
 classifiers = [
@@ -26,8 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.14",
 ]
 [project.urls]
 Homepage = "https://github.com/KorAP/PythonKorAPClient"

@@ -16,7 +16,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "1.2.1"
+CURRENT_R_PACKAGE_VERSION = "1.4.1"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -31,6 +31,16 @@ NULL = NULL
 @korapclient_converter.py2rpy.register(list)
 def _rpy2py_robject(listObject):
     return robjects.StrVector(listObject)
+
+
+@korapclient_converter.py2rpy.register(dict)
+def _dict_to_named_vector(dictObject):
+    """Convert dicts to named R vectors, e.g. {"Germany": "pubPlaceKey=DE"} for labelled virtual corpora."""
+    if all(isinstance(value, str) for value in dictObject.values()):
+        vector = robjects.StrVector(list(dictObject.values()))
+        vector.names = robjects.StrVector([str(key) for key in dictObject.keys()])
+        return vector
+    return robjects.ListVector(dictObject)
 
 
 robjects.conversion.set_conversion(robjects.default_converter + pandas2ri.converter + korapclient_converter)
@@ -115,7 +125,8 @@ class KorAPConnection(RS4):
         - **apiUrl**
         - **accessToken** (default = `getAccessToken(KorAPUrl)`
         - **userAgent** (default = `"Python-KorAP-Client"`)
-        - **timeout** (default = 110)
+        - **timeout** - maximum time in seconds a request may take (default = 240). Long running searches are no longer
+          aborted after 10 minutes of low transfer rates; only this timeout applies.
         - **verbose** (default = False)
         - **cache** (default = True)
         """
@@ -166,9 +177,11 @@ class KorAPConnection(RS4):
     def corpusStats(self, *args, **kwargs):
         """Query the size of the whole corpus or a virtual corpus specified by the vc argument.
 
-        - **vc** (default = "")
+        - **vc** - virtual corpus definition, list thereof, or dict mapping labels to definitions (default = "").
+          Dict keys are used as labels in a `label` column (see `KorAPConnection.frequencyQuery`).
         - **verbose** (default = kco@verbose)
         - **as.df** (default = True)
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
 
         Returns:
             `DataFrame`|`RS4`
@@ -188,7 +201,7 @@ class KorAPConnection(RS4):
         """Query relative frequency of search term(s).
 
         - **query** - query string or list of query strings
-        - **vc** - virtual corpus definition or list thereof  (default: "")
+        - **vc** - virtual corpus definition, list thereof, or dict mapping labels to definitions (default: "")
         - **conf.level** - confidence level of the returned confidence interval (default = 0.95)
         - **as.alternatives** - decides whether queries should be treated as mutually exclusive and exhaustive wrt. to some meaningful class (e.g. spelling variants of a certain word form) (default = False)
         - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
@@ -197,10 +210,13 @@ class KorAPConnection(RS4):
         - **accessRewriteFatal** - abort if query or given vc had to be rewritten due to insufficient rights (not yet implemented) (default = `True`)
         - **verbose** - (default = `self.verbose`)
         - **expand** - bool that decides if `query` and `vc` parameters are expanded to all of their combinations (default = `len(vc) != len(query)`)
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
 
         Returns:
-            DataFrame with columns `'query', 'totalResults', 'vc', 'webUIRequestUrl', 'total', 'f',
-           'conf.low', 'conf.high'`.
+            DataFrame with columns `'query', 'totalResults', 'vc', 'webUIRequestUrl', 'queryDuration', 'total', 'f',
+           'conf.low', 'conf.high'`. `queryDuration` is the time in seconds a request took on the client side.
+            If `vc` is a dict, its keys are used as labels in an additional `label` column.
+            A warning is issued if a request failed or the server cut a search short (`timeExceeded`).
 
         Example:
             ```
@@ -213,6 +229,15 @@ class KorAPConnection(RS4):
             4  Ameisenplage             6  ...  2.691331e-09  1.519888e-08
             5  Ameisenplage             3  ...  8.629463e-10  1.064780e-08
             ```
+
+            To label virtual corpora, pass a dict:
+            ```
+            $ vc = {"Germany": "pubPlaceKey=DE", "Switzerland": "pubPlaceKey=CH"}
+            $ kcon.frequencyQuery("Ameisenplage", vc=vc)[["query", "label", "totalResults"]]
+                      query        label  totalResults
+            1  Ameisenplage      Germany           178
+            2  Ameisenplage  Switzerland            27
+            ```
         """
         return KorAPClient.frequencyQuery(self, *args, **kwargs)
 
@@ -220,14 +245,15 @@ class KorAPConnection(RS4):
         """Get collocation scores for given node(s) and collocate(s).
 
         - **node** - target word
-        - **collocate** - collocate of target word
-        - **vc** - virtual corpus definition or list thereof  (default: "")
+        - **collocate** - collocate of target word or list thereof (all combinations of collocates and vcs are queried)
+        - **vc** - virtual corpus definition, list thereof, or dict mapping labels to definitions (default: ""). Dict keys are used as labels.
         - **lemmatizeNodeQuery** - logical, set to TRUE if node query should be lemmatized, i.e. x -> [tt/l=x]
         - **lemmatizeCollocateQuery** - logical, set to TRUE if collocate query should be lemmatized, i.e. x -> [tt/l=x]
         - **leftContextSize** - size of the left context window
         - **rightContextSize** - size of the right context window
-        - **scoreFunctions** - named list of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
+        - **scoreFunctions** - dict of R (!) score functions of the form function(O1, O2, O, N, E, window_size), see e.g. KorAPClient.pmi
         - **smoothingConstant** - smoothing constant will be added to all observed values
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
 
         Returns:
             DataFrame with columns `'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',  'leftContextSize',
@@ -245,7 +271,7 @@ class KorAPConnection(RS4):
         """ **EXPERIMENTAL**: Performs a collocation analysis for the given node (or query) in the given virtual corpus.
 
         - **node** - target word or list of target words
-        - **vc** - string or list of strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
+        - **vc** - string, list of strings, or dict mapping labels to strings describing the virtual corpus in which the query should be performed. An empty string (default) means the whole corpus, as far as it is license-wise accessible.
         - **lemmatizeNodeQuery** - if True, node query will be lemmatized, i.e. x -> [tt/l=x]
         - **minOccur** - minimum absolute number of observed co-occurrences to consider a collocate candidate
         - **leftContextSize** - size of the left context window
@@ -258,6 +284,12 @@ class KorAPConnection(RS4):
         - **stopwords** - vector of stopwords not to be considered as collocates
         - **seed** - seed for random page collecting order
         - **expand** - if True, node and vc parameters are expanded to all of their combinations
+        - **minObservedExpectedRatio** - minimum ratio of observed to expected co-occurrence frequency for a collocate
+          to be kept (default = 1, i.e. collocates occurring less often than expected by chance are discarded). Set to 0
+          for the unfiltered results of earlier versions.
+        - **cacheAs** - path to an RDS file to keep the result in. If the file exists and records the same call, it is
+          read back instead of contacting the server; otherwise the analysis is run and its result stored there
+          (`.rds` is appended if missing). By default, no file is used.
 
         Returns:
             DataFrame with columns `'node', 'collocate', 'label', 'vc','webUIRequestUrl', 'w',  'leftContextSize',
@@ -265,6 +297,8 @@ class KorAPConnection(RS4):
 
         Details:
             The collocation analysis is currently implemented on the client side, as some of the functionality is not yet provided by the KorAP backend. Mainly for this reason it is very slow (several minutes, up to hours), but on the other hand very flexible. You can, for example, perform the analysis in arbitrary virtual corpora, use complex node queries, and look for expression-internal collocates using the focus function (see examples and demo).
+            `logDice` is computed as defined by Rychlý (2008), `14 + log2(2 * O / (O1 + O2))`, so that values are comparable to those of other tools. `ll` follows Evert (2004).
+            When `vc` is a list or dict of virtual corpora, the results are compared across them (**experimental**, see `?collocationAnalysis` in R).
             To increase speed at the cost of accuracy and possible false negatives, you can decrease searchHitsSampleLimit and/or topCollocatesLimit and/or set exactFrequencies to FALSE.
             Note that currently not the tokenization provided by the backend, i.e. the corpus itself, is used, but a tinkered one. This can also lead to false negatives and to frequencies that differ from corresponding ones acquired via the web user interface.
 
@@ -289,7 +323,8 @@ class KorAPConnection(RS4):
         - **KorAPUrl** - instead of specifying the `query` and `vc` string parameters, you can copy your KorAP query URL here from the browser
         - **metadataOnly** - determines whether queries should return only metadata without any snippets. This can also be useful to prevent access rewrites. (default = True)
         - **ql** - query language: `"poliqarp" | "cosmas2" | "annis" | "cql" | "fcsql"` (default = `"poliqarp"`)
-        - **fields** - (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass", "matchStart", "matchEnd"]`)
+        - **fields** - (meta)data fields that will be fetched for every match (default = `["corpusSigle", "textSigle", "pubDate",  "pubPlace", "availability", "textClass", "dmozDomain", "wikiDomain", "snippet", "tokens"]`).
+          Since DeReKo-KorAP-2026-II, the topic domain of DeReKo texts is given by `dmozDomain` and `wikiDomain` instead of `textClass`.
         - **verbose** - (default = `self.verbose`)
 
         Returns:
@@ -323,6 +358,7 @@ class KorAPConnection(RS4):
         (see `Kustvakt Wiki https://github.com/KorAP/Kustvakt/wiki/Service:-Metadata-Retrieval`).
 
         - **textSigle** - unique text id (concatenation of corpus, document and text ids, separated by `/`, e.g. ) or list thereof
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
 
         Returns:
             DataFrame with columns for each metadata property. In case of errors, such as non-existing texts/sigles, the tibble will also contain a column called `errors`.
