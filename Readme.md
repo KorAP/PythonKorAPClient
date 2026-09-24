@@ -23,9 +23,22 @@ via [rpy2](https://rpy2.github.io/). The latter also automatically translates be
 #### Debian / Ubuntu
 sudo apt install r-base-dev r-cran-rcpp r-cran-cpp11 libcurl4-gnutls-dev libxml2-dev libsodium-dev libsecret-1-dev libfontconfig1-dev libssl-dev python3-dev python3-pip python3-rpy2 python3-pandas python3-pytest libdeflate-dev r-cran-rcpparmadillo
 
-#### Fedora / CentOS / RHEL
-sudo yum install -y R R-devel libcurl-devel openssl-devel libxml2-devel libsodium-devel python3-pandas
+#### Fedora
+sudo dnf install -y R R-devel gcc libcurl-devel openssl-devel libxml2-devel libsodium-devel libsecret-devel fontconfig-devel python3-devel python3-pip
+
+#### Rocky / Alma / RHEL 10
+sudo dnf install -y epel-release && sudo dnf config-manager --set-enabled crb
+sudo dnf install -y R-core-devel gcc libcurl-devel openssl-devel libxml2-devel libsodium-devel libsecret-devel fontconfig-devel python3-devel python3-pip
+
+#### Rocky / Alma / RHEL 9 (default python3 is 3.9, which is too old, so use python3.12)
+sudo dnf install -y epel-release && sudo dnf config-manager --set-enabled crb
+sudo dnf install -y R-core-devel gcc libcurl-devel openssl-devel libxml2-devel libsodium-devel libsecret-devel fontconfig-devel python3.12 python3.12-devel python3.12-pip
 ```
+
+The Python development headers (`python3-dev` / `python3-devel` / `python3.12-devel`) are required
+because pip compiles parts of rpy2 from source. Without them, the installation fails with
+`fatal error: Python.h: No such file or directory`.
+Make sure the headers match the Python version you run pip with.
 
 #### 2. Install the RKorAPClient package
 
@@ -46,6 +59,12 @@ On Linux and macOS:
 ```shell script
 # py -m pip install KorAPClient -U
 python3 -m pip install KorAPClient -U # --break-system-packages
+```
+
+On Rocky / Alma / RHEL 9, use Python 3.12 explicitly:
+
+```shell script
+python3.12 -m pip install --user KorAPClient -U
 ```
 
 On Windows:
