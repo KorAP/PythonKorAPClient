@@ -1,5 +1,20 @@
 # Version history
 
+## 1.5.1
+
+- Updates recommended RKorAPClient version to 1.5.1
+- Added **experimental metadata-based dispersion analysis**, to compare how evenly hits are distributed across sources, countries, years or other metadata, accounting for the sizes of the corpus parts:
+  - `KorAPQuery.dispersionAnalysis()` calculates dispersion measures (DP, DPnorm, Juilland's D, Carroll's D2, Rosengren's S, range) for a query
+  - `KorAPConnection.dispersionQuery()` does the same for one or more query strings, optionally across custom corpus parts
+  - `KorAPConnection.corpusPartition()` defines or discovers corpus parts and their token counts
+  - `KorAPQuery.fetchSamplePages()` fetches a reproducible random sample of result pages, which `dispersionAnalysis()` reuses
+  - the results are DataFrames whose `distribution` column holds the per-part counts as DataFrames
+  - `hc_dispersion()` plots the shares of the corpus parts as interactive chart (`Highchart`), which is displayed in Jupyter notebooks and can be saved as HTML file with `save()` or opened in the browser with `show()`
+- retrieval handles server rate limits and failed page downloads more reliably, with warnings for incomplete results
+- `KorAPConnection.maintenanceInfo()` shows planned and ongoing maintenance of the KorAP instance; maintenance notices are also announced before server requests
+- an expired stored access token no longer breaks the connection: `KorAPConnection()` warns and continues without authorization
+- the local cache of API responses is kept across minor releases and when the access token is renewed
+
 ## 1.4.1
 
 - Updates recommended RKorAPClient version to 1.4.1

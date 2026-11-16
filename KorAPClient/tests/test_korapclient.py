@@ -2,7 +2,9 @@ import os
 import tempfile
 import unittest
 
-from KorAPClient import KorAPClient, KorAPConnection, NULL
+import pandas as pd
+
+from KorAPClient import KorAPClient, KorAPConnection, NULL, hc_dispersion
 
 LABELLED_VCS = {'Germany': 'pubPlaceKey=DE', 'Switzerland': 'pubPlaceKey=CH'}
 
@@ -234,6 +236,80 @@ class TestKorAPClient(unittest.TestCase):
             matches['tokens.right'].str.contains("rpy2.rinterface_lib.sexp.NULLType", na=False).any(),
             "The string 'rpy2.rinterface_lib.sexp.NULLType' was found in tokens.right!"
         )
+
+    def test_dispersion_query(self):
+        df = self.kcon.dispersionQuery(["Ameisenplage", "Mückenplage"], by="region", vc="pubDate in 2022")
+        self.assertEqual(list(df['query']), ["Ameisenplage", "Mückenplage"])
+        self.assertEqual(list(df['partition']), ["region", "region"])
+        self.assertGreater(df['nParts'].iloc[0], 2)
+        self.assertTrue(df['DP'].between(0, 1).all())
+        self.assertGreaterEqual(df['range'].iloc[1], df['range'].iloc[0])
+        distribution = df['distribution'].iloc[1]
+        self.assertIsInstance(distribution, pd.DataFrame)
+        self.assertEqual(len(distribution), df['nParts'].iloc[1])
+        self.assertIn('DE', list(distribution['part']))
+        self.assertEqual(distribution['frequency'].sum(), df['usedHits'].iloc[1])
+        self.assertGreater(distribution['tokens'].min(), 0)
+        self.assertEqual(df['sampling'].iloc[1]['method'], 'exact_counts')
+
+    def test_dispersion_query_with_corpus_partition(self):
+        countries = self.kcon.corpusPartition("region", {"Deutschland": "DE", "Schweiz": "CH"}, vc="pubDate in 2022")
+        parts = countries.toDataFrame()
+        self.assertEqual(list(parts['part']), ["Deutschland", "Schweiz"])
+        self.assertGreater(parts['tokens'].iloc[0], parts['tokens'].iloc[1])
+        df = self.kcon.dispersionQuery("Mückenplage", partitions=countries,
+                                       scoreFunctions={'DP': KorAPClient.dispersionDP})
+        self.assertEqual(df['nParts'].iloc[0], 2)
+        self.assertIn('DP', df.columns)
+        self.assertNotIn('JuillandD', df.columns)
+        self.assertEqual(list(df['distribution'].iloc[0]['part']), ["Deutschland", "Schweiz"])
+
+    def test_corpus_partition_by_year(self):
+        years = self.kcon.corpusPartition("year", [2021, 2022], vc="pubDate in 2021 | pubDate in 2022")
+        self.assertEqual(list(years.toDataFrame()['part']), ["2021", "2022"])
+
+    def test_dispersion_analysis(self):
+        q = self.kcon.corpusQuery("Mückenplage", vc="pubDate in 2022")
+        df = q.dispersionAnalysis(by="region")
+        self.assertEqual(df['query'].iloc[0], "Mückenplage")
+        self.assertEqual(df['totalResults'].iloc[0], q.slots['totalResults'][0])
+        self.assertFalse(df['estimated'].iloc[0])
+        for measure in ['DP', 'DPnorm', 'JuillandD', 'CarrollD2', 'RosengrenS', 'range']:
+            self.assertIn(measure, df.columns)
+
+    def test_dispersion_analysis_of_sampled_pages(self):
+        q = self.kcon.corpusQuery("Ameise", vc="pubDate in 2022").fetchSamplePages(maxHits=100, seed=3)
+        matches = q.slots['collectedMatches']
+        self.assertEqual(len(matches), 100)
+        self.assertIsInstance(matches['dmozDomain'].dropna().iloc[0], str)
+        df = q.dispersionAnalysis(by="region")
+        self.assertTrue(df['estimated'].iloc[0])
+        self.assertEqual(df['sampledHits'].iloc[0], 100)
+        self.assertEqual(df['sampling'].iloc[0]['method'], 'random_pages')
+        self.assertEqual(df['sampling'].iloc[0]['seed'], 3)
+
+
+    def test_maintenance_info(self):
+        info = self.kcon.maintenanceInfo(refresh=True)
+        self.assertIn(info['state'], ["ok", "stale", "unknown", "unsupported"])
+        self.assertIsInstance(info['events'], pd.DataFrame)
+        for column in ['start', 'end', 'start_epoch', 'end_epoch', 'all_day', 'ongoing']:
+            self.assertIn(column, info['events'].columns)
+
+    def test_hc_dispersion(self):
+        df = self.kcon.dispersionQuery(["Ameisenplage", "Mückenplage"], by="region", vc="pubDate in 2022")
+        df["query"] = df["query"].map({"Ameisenplage": "Ameisen", "Mückenplage": "Mücken"})
+        chart = hc_dispersion(df, partition="region", top=3)
+        with tempfile.TemporaryDirectory() as directory:
+            path = chart.save(os.path.join(directory, "dispersion.html"))
+            with open(path, encoding="utf-8") as file:
+                html = file.read()
+        self.assertIn("Mücken", html)
+        self.assertIn("Remaining 4 parts", html)
+        self.assertIn("<iframe", chart._repr_html_())
+        with self.assertRaises(ValueError):
+            hc_dispersion(df[["query", "partition"]])
+
 
 if __name__ == '__main__':
     unittest.main()

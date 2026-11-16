@@ -129,6 +129,51 @@ kcon = KorAPConnection(verbose=True)
 df = kcon.frequencyQuery("Ameisenplage", vc=["pubDate in 2010", "pubDate in 2020"], cacheAs="ameisenplage.rds")
 ```
 
+### Dispersion analysis
+[![Lifecycle:experimental](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+
+`dispersionQuery` measures how evenly the hits of one or more queries are distributed across corpus parts,
+such as sources (`by="source"`), countries (`by="region"`) or publication years (`by="year"`), taking the sizes of the parts into account.
+The parts and their sizes are discovered automatically.
+
+```python
+from KorAPClient import KorAPConnection
+
+kcon = KorAPConnection(verbose=True)
+df = kcon.dispersionQuery(["Ameisenplage", "Mückenplage"], by="region", vc="pubDate in 2022")
+print(df[["query", "totalResults", "nParts", "DP", "JuillandD", "range"]].to_markdown(floatfmt=".2f"))
+```
+
+|    | query        |   totalResults |   nParts |   DP |   JuillandD |   range |
+|---:|:-------------|---------------:|---------:|-----:|------------:|--------:|
+|  1 | Ameisenplage |           2.00 |        7 | 0.26 |        0.00 |    1.00 |
+|  2 | Mückenplage  |          18.00 |        7 | 0.06 |        0.50 |    3.00 |
+
+Smaller `DP` values and larger `JuillandD` values mean a more even distribution; `range` is the number of parts with at least one hit.
+The counts behind the measures are available as DataFrames in the `distribution` column, e.g. `df["distribution"].iloc[1]`.
+
+For an existing query, use its `dispersionAnalysis` method. With `fetchSamplePages`, the dispersion of frequent expressions
+can be estimated from a reproducible random sample of result pages. Custom corpus parts can be defined with `corpusPartition`:
+
+```python
+q = kcon.corpusQuery("Ameise", vc="pubDate in 2022").fetchSamplePages(maxHits=2000, seed=7)
+q.dispersionAnalysis(by="region")
+
+countries = kcon.corpusPartition("region", ["DE", "AT", "CH"], vc="pubDate in 2022")
+kcon.dispersionQuery("Mückenplage", partitions=countries)
+```
+
+`hc_dispersion` plots, for each corpus part, its share of the corpus tokens next to its share of the hits of each query.
+The interactive chart is displayed directly in Jupyter notebooks; elsewhere it can be opened in the browser or saved as HTML file:
+
+```python
+from KorAPClient import hc_dispersion
+
+chart = hc_dispersion(df, partition="region")
+chart.show()                    # open in the default web browser
+chart.save("dispersion.html")   # save as self-contained HTML file
+```
+
 ### Authorization
 
 In order to retrieve KWIC data from copyrighted texts, you need to authenticate yourself and authorize the client to act on behalf of you.

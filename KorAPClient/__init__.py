@@ -1,6 +1,11 @@
 __pdoc__ = {'tests': False}
 
+import html
+import os
+import re
+import tempfile
 import warnings
+import webbrowser
 from itertools import product
 
 import pandas as pd
@@ -16,7 +21,7 @@ from rpy2 import rinterface as ri
 from packaging import version
 from rpy2.robjects.methods import RS4
 
-CURRENT_R_PACKAGE_VERSION = "1.4.1"
+CURRENT_R_PACKAGE_VERSION = "1.5.1"
 
 KorAPClient = packages.importr('RKorAPClient')
 if version.parse(KorAPClient.__version__) < version.parse(CURRENT_R_PACKAGE_VERSION):
@@ -90,6 +95,196 @@ def toDataFrame(obj):
 # associate the converter with R data.frame class
 fix_lists_in_dataframes.rpy2py_nc_map[ri.ListSexpVector].update({"data.frame": toDataFrame})
 
+
+
+def _call_keeping_r_result(function, *args, **kwargs):
+    """Call an R function with the usual argument conversion, but return its result as unconverted R object."""
+    cv = get_conversion()
+    return ri.SexpClosure.__call__(function, *[cv.py2rpy(arg) for arg in args],
+                                   **{key: cv.py2rpy(value) for key, value in kwargs.items()})
+
+
+_flat_columns = robjects.r("""function(x)
+    as.data.frame(unclass(x)[!vapply(x, is.list, logical(1))], stringsAsFactors = FALSE, check.names = FALSE)""")
+
+_join_list_columns = robjects.r("""function(kqo) {
+    join <- function(x) if (length(x) == 0 || all(is.na(x))) NA_character_ else paste(x, collapse = " ")
+    df <- kqo@collectedMatches
+    df[] <- lapply(df, function(column) if (is.list(column)) vapply(column, join, character(1)) else column)
+    kqo@collectedMatches <- df
+    kqo
+}""")
+
+
+def _without_na_strings(df):
+    """Replace R's NA_character_ by None in the string columns of a DataFrame."""
+    for name in df.columns[df.dtypes == object]:
+        df[name] = df[name].map(lambda value: None if value is ri.NA_Character else value)
+    return df
+
+
+def _r_list_to_dict(obj):
+    result = {}
+    for name, value in zip(obj.names, obj):
+        if isinstance(value, NULLType):
+            result[name] = None
+        elif isinstance(value, ri.ListSexpVector):
+            result[name] = _r_list_to_dict(value)
+        elif len(value) == 1:
+            result[name] = None if value[0] is ri.NA_Character else value[0]
+        else:
+            result[name] = list(value)
+    return result
+
+
+def _r_value_to_py(value):
+    """Convert an R scalar or vector to a Python value, with NA as None."""
+    if isinstance(value, NULLType):
+        return None
+    values = [None if item in (ri.NA_Character, ri.NA_Integer, ri.NA_Logical) or
+              (isinstance(item, float) and item != item) else item for item in value]
+    return values[0] if len(values) == 1 else values
+
+
+def _dispersion_to_pandas(res):
+    """Convert a dispersion result with nested tables to a DataFrame with DataFrames and dicts in its list columns."""
+    cv = get_conversion()
+    df = _without_na_strings(_flat_columns(res))
+    for position, (name, column) in enumerate(zip(res.names, res)):
+        if isinstance(column, ri.ListSexpVector):
+            values = [_without_na_strings(cv.rpy2py(value)) if "data.frame" in value.rclass
+                      else _r_list_to_dict(value) for value in column]
+            df.insert(position, name, pd.Series(values, index=df.index, dtype=object))
+    return df
+
+
+_hc_dispersion = robjects.r("""function(rows, distributions, apiUrls, indexRevisions, probabilities, partition, top) {
+    rows <- tibble::as_tibble(rows)
+    rows$distribution <- lapply(distributions, function(part) {
+        part <- tibble::as_tibble(part)
+        for (field in intersect(c("part", "vc", "webUIRequestUrl"), names(part)))
+            part[[field]] <- as.character(part[[field]])
+        part
+    })
+    rows$sampling <- lapply(seq_along(probabilities), function(i)
+        list(apiUrl = apiUrls[[i]], indexRevision = indexRevisions[[i]], inclusionProbability = probabilities[[i]]))
+    RKorAPClient::hc_dispersion(rows, partition = partition, top = top)
+}""")
+
+_save_widget = robjects.r("""function(widget, file, title)
+    htmlwidgets::saveWidget(widget, file, selfcontained = FALSE, libdir = "lib", title = title)""")
+
+
+def _inline_resources(document, directory):
+    """Embed the scripts and stylesheets that an HTML document loads from directory into the document."""
+    def read(name):
+        with open(os.path.join(directory, name), encoding="utf-8") as file:
+            return file.read()
+
+    document = re.sub(r'<script src="(lib/[^"]+)"></script>',
+                      lambda match: "<script>" + read(match.group(1)).replace("</script", "<\\/script") + "</script>",
+                      document)
+    return re.sub(r'<link href="(lib/[^"]+)" rel="stylesheet" />',
+                  lambda match: "<style>" + read(match.group(1)) + "</style>", document)
+
+
+class Highchart:
+    """Interactive [Highcharts](https://www.highcharts.com/) chart created by an R plotting function.
+
+    In Jupyter notebooks, the chart is displayed when it is the last expression of a cell.
+    Elsewhere use `Highchart.show` or `Highchart.save`.
+    """
+
+    def __init__(self, widget, title="KorAP chart", height=600):
+        self.widget = widget
+        self.title = title
+        self.height = height
+
+    def to_html(self):
+        """Return the chart as self-contained HTML document."""
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "chart.html")
+            _save_widget(self.widget, path, self.title)
+            with open(path, encoding="utf-8") as file:
+                return _inline_resources(file.read(), directory)
+
+    def save(self, path):
+        """Save the chart as self-contained HTML file.
+
+        - **path** - name of the HTML file
+
+        Returns:
+            absolute path of the HTML file
+        """
+        path = os.path.abspath(os.path.expanduser(path))
+        with open(path, "w", encoding="utf-8") as file:
+            file.write(self.to_html())
+        return path
+
+    def show(self):
+        """Open the chart in the default web browser."""
+        file = tempfile.NamedTemporaryFile(suffix=".html", delete=False)
+        file.close()
+        webbrowser.open("file://" + self.save(file.name))
+
+    def _repr_html_(self):
+        return '<iframe srcdoc="{}" style="width: 100%; height: {}px; border: none"></iframe>'.format(
+            html.escape(self.to_html(), quote=True), self.height)
+
+
+def hc_dispersion(df, partition=None, top=None):
+    """ **EXPERIMENTAL**: Plot the distribution of dispersion analysis results across corpus parts.
+
+    Creates an interactive bar chart that compares, for each corpus part, its share of the corpus tokens
+    with its share of the hits of each query.
+
+    - **df** - DataFrame returned by `KorAPConnection.dispersionQuery` or `KorAPQuery.dispersionAnalysis`. Results of several calls can be combined with `pandas.concat`, as long as they refer to the same corpus parts.
+    - **partition** - name of the partition to plot, e.g. `"source"`. Required if `df` contains more than one partition.
+    - **top** - number of corpus parts to show individually; the remaining parts are combined (default = 12, or all parts for calendar partitions like `"year"`). Use `float("inf")` to show all parts.
+
+    Returns:
+        `Highchart`
+
+    Details:
+        The series are labelled with the `variant` column of `df` if there is one, otherwise with its `query` column.
+
+    Example:
+        ```
+        $ kcon = KorAPConnection()
+        $ df = kcon.dispersionQuery(["Ameisenplage", "Mückenplage"], by="region", vc="pubDate in 2022")
+        $ hc_dispersion(df).save("dispersion.html")
+        ```
+    """
+    required = ["partition", "query", "distribution", "estimated", "sampling"]
+    if not isinstance(df, pd.DataFrame) or len(df) == 0 or not all(name in df.columns for name in required):
+        raise ValueError("Use a result of dispersionQuery() or dispersionAnalysis() with distribution data.")
+    cv = get_conversion()
+
+    def r_list(values):
+        return ri.ListSexpVector([cv.py2rpy(value) for value in values])
+
+    def sampling_field(name, na):
+        values = [sampling.get(name) if isinstance(sampling, dict) else None for sampling in df["sampling"]]
+        return r_list([na if value is None else value for value in values])
+
+    rows = df.drop(columns=["distribution", "sampling"]).reset_index(drop=True)
+    widget = ri.SexpClosure.__call__(
+        _hc_dispersion, cv.py2rpy(rows), r_list(df["distribution"]),
+        sampling_field("apiUrl", ri.NA_Character), sampling_field("indexRevision", ri.NA_Character),
+        sampling_field("inclusionProbability", ri.NA_Real),
+        NULL if partition is None else cv.py2rpy(partition), NULL if top is None else cv.py2rpy(top))
+    return Highchart(widget, title="Dispersion" if partition is None else "Dispersion by " + partition)
+
+
+class KorAPCorpusPartition(robjects.vectors.DataFrame):
+    """Corpus parts and their token counts, as returned by `KorAPConnection.corpusPartition`.
+
+    Pass it as `partitions` argument to `KorAPConnection.dispersionQuery`. Use `toDataFrame` to inspect it.
+    """
+
+    def toDataFrame(self):
+        """Returns the parts as DataFrame with columns `'part', 'value', 'vc', 'tokens'`."""
+        return _without_na_strings(_flat_columns(self))
 
 
 def expand_grid(dictionary):
@@ -372,6 +567,116 @@ class KorAPConnection(RS4):
         """
         return KorAPClient.textMetadata(self, textSigle, **kwargs)
 
+    def maintenanceInfo(self, refresh=False):
+        """Inspect planned maintenance of the KorAP instance
+
+        Retrieves the public maintenance schedule from the KorAP frontend of the connected instance. No authorization is needed.
+        Before server requests, the client checks for maintenance notices at most once every five minutes and announces each
+        maintenance window. To disable these checks, run `rpy2.robjects.r("options(rkorap.maintenance.notices = FALSE)")`.
+
+        - **refresh** - if True, bypass the five-minute schedule cache (default = `False`)
+
+        Returns:
+            dict with `'state'` (`"ok"`, `"stale"`, `"unknown"` or `"unsupported"`), `'time_zone'`, the Unix timestamps
+            `'last_success'` and `'valid_until'` and an `'events'` DataFrame with the columns `'start', 'end'` (ISO 8601),
+            `'start_epoch', 'end_epoch'` (Unix timestamps), `'all_day'` and `'ongoing'`. All-day end dates are exclusive.
+            An empty schedule with state `"unknown"` does not mean that no maintenance is planned.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection()
+            $ kcon.maintenanceInfo()["events"]
+            ```
+        """
+        res = _call_keeping_r_result(KorAPClient.maintenanceInfo, self, refresh=refresh)
+        cv = get_conversion()
+        return {name: cv.rpy2py(value) if "data.frame" in value.rclass else _r_value_to_py(value)
+                for name, value in zip(res.names, res)}
+
+    def corpusPartition(self, by="source", values=None, vc="", **kwargs):
+        """ **EXPERIMENTAL**: Define corpus parts for a dispersion analysis.
+
+        Discovers metadata groups and their token counts, or defines a custom partition. Discovery checks the base
+        corpus independently of query hits, so that parts without hits are retained.
+
+        - **by** - metadata field. The aliases `"source"`, `"year"` and `"region"` stand for `corpusTitle`, `pubDate` (publication year) and `pubPlaceKey` respectively.
+        - **values** - list of metadata values, or dict mapping part labels to values. If neither `values` nor `parts` is given, the groups are discovered automatically.
+        - **vc** - base virtual corpus. All parts are intersected with this corpus. (default = "")
+        - **parts** - alternatively, a dict mapping part labels to virtual corpus definitions
+        - **regex** - optional trailing-suffix grouping rule for automatic discovery (see `KorAPQuery.dispersionAnalysis`)
+        - **verbose** - (default = `self.verbose`)
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
+
+        Returns:
+            `KorAPCorpusPartition` that can be passed to `KorAPConnection.dispersionQuery`.
+            Use its `toDataFrame()` method to get the parts with their virtual corpus definitions and token counts.
+            A warning is issued if the listed parts do not cover the whole base corpus.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection()
+            $ countries = kcon.corpusPartition("region", ["DE", "AT", "CH"], vc="pubDate in 2022")
+            $ countries.toDataFrame()[["part", "tokens"]]
+              part       tokens
+            1   DE  681374138.0
+            2   AT  121466921.0
+            3   CH   96168291.0
+            $ kcon.dispersionQuery("Ameisenplage", partitions=countries)
+            ```
+        """
+        if isinstance(values, dict):
+            kwargs["values"] = {label: str(value) for label, value in values.items()}
+        elif values is not None:
+            kwargs["values"] = [str(value) for value in values]
+        return KorAPCorpusPartition(_call_keeping_r_result(KorAPClient.corpusPartition, self, by, vc=vc, **kwargs))
+
+    def dispersionQuery(self, query, partitions=None, **kwargs):
+        """ **EXPERIMENTAL**: Query the dispersion of search term(s) across corpus metadata.
+
+        Computes dispersion measures for one or more queries, i.e. how evenly their hits are distributed across
+        corpus parts such as sources, countries or years, taking the sizes of the parts into account.
+
+        - **query** - query string or list of query strings
+        - **partitions** - `KorAPCorpusPartition` (see `KorAPConnection.corpusPartition`) or dict of them. If not given, the groups are discovered automatically using `by`.
+        - **by** - metadata field or list of fields for automatic grouping: `"source"` (default), `"year"`, `"region"` or a metadata field name
+        - **regex** - optional trailing-suffix grouping rule for automatic grouping (see `KorAPQuery.dispersionAnalysis`)
+        - **vc** - base virtual corpus for automatic grouping (default = ""). With explicit partitions, their base virtual corpus is used instead.
+        - **scoreFunctions** - dict of R (!) measure functions of the form function(frequencies, sizes), see e.g. `KorAPClient.dispersionDP`. (default = `KorAPClient.defaultDispersionFunctions()`)
+        - **exactFrequencies** - if True (default), request exact counts for each part. If False, estimate them from a sample of at most `searchHitsSampleLimit` hits.
+        - **searchHitsSampleLimit** - maximum metadata sample size (default = 20000)
+        - **seed** - seed for the random selection of result pages (default = 7)
+        - **ql** - query language (default = `"poliqarp"`)
+        - **verbose** - (default = `self.verbose`)
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
+
+        Returns:
+            DataFrame with one row per query and partition and the columns `'query', 'partition', 'totalResults',
+            'sampledHits', 'usedHits', 'excludedHits', 'nParts', 'estimated', 'rangeIsLowerBound', 'distribution',
+            'sampling'`, followed by one column per measure, by default `'DP', 'DPnorm', 'JuillandD', 'CarrollD2',
+            'RosengrenS', 'range'`. Each `distribution` cell holds a DataFrame with the sizes, hit counts, relative
+            frequencies and concordance URLs of the corpus parts; each `sampling` cell holds a dict that records how
+            the counts were obtained.
+
+        Details:
+            Smaller `DP` and `DPnorm` values mean a more even distribution, whereas larger `JuillandD`, `CarrollD2` and `RosengrenS` values do. `range` is the number of parts with at least one hit.
+            Discovering the groups of a metadata field and their sizes can take time on the first call, especially for `by="source"` in large virtual corpora.
+            See `?dispersionQuery` and `` ?`dispersion-score-functions` `` in R for the interpretation of the measures.
+
+        Example:
+            ```
+            $ kcon = KorAPConnection()
+            $ df = kcon.dispersionQuery(["Ameisenplage", "Mückenplage"], by="region", vc="pubDate in 2022")
+            $ df[["query", "totalResults", "nParts", "DP", "JuillandD", "range"]]
+                      query  totalResults  nParts        DP  JuillandD  range
+            1  Ameisenplage           2.0       7  0.265146   0.000000    1.0
+            2   Mückenplage          18.0       7  0.062939   0.495076    3.0
+            $ df["distribution"].iloc[1][["part", "tokens", "frequency"]]
+            ```
+        """
+        if partitions is not None:
+            kwargs["partitions"] = partitions
+        return _dispersion_to_pandas(_call_keeping_r_result(KorAPClient.dispersionQuery, self, query, **kwargs))
+
 class KorAPQuery(RS4):
     """Query to a KorAP server."""
 
@@ -476,3 +781,61 @@ class KorAPQuery(RS4):
             res.slots['collectedMatches'] = df
             super().__init__(res)
             return self
+
+    def fetchSamplePages(self, *args, **kwargs):
+        """Fetch a reproducible random sample of result pages
+
+        Unlike `fetchNext`, which takes the first hits, complete result pages are selected at random from the
+        entire result set. If all results fit within the limit, all of them are fetched.
+
+        - **maxHits** - maximum number of hits to retrieve. Complete pages are used, so the limit is rounded down to a multiple of 50. (default = 2000)
+        - **seed** - seed for choosing pages (default = 7)
+        - **verbose**
+        - **warn** - warn that the result is a sample of pages (default = True)
+
+        Returns:
+            `KorAPQuery`, whose sample is reused by `KorAPQuery.dispersionAnalysis`
+
+        Example:
+            ```
+            $ q = KorAPConnection().corpusQuery("Gendern").fetchSamplePages(maxHits=2000, seed=7)
+            $ q.dispersionAnalysis(by="region")
+            ```
+        """
+        # multivalued metadata fields, such as dmozDomain, are joined by spaces, as in the other fetch methods
+        res = _join_list_columns(KorAPClient.fetchSamplePages(self, *args, **kwargs))
+        super().__init__(res)
+        return self
+
+    def dispersionAnalysis(self, by="source", **kwargs):
+        """ **EXPERIMENTAL**: Calculates how evenly the hits of the query are distributed across corpus metadata.
+
+        The groups of the chosen metadata dimension and their sizes are discovered automatically, including
+        groups without hits.
+
+        - **by** - metadata field or list of fields. `"source"` (default) groups by `corpusTitle`, ignoring trailing years; `"year"` groups `pubDate` by publication year; `"region"` uses `pubPlaceKey`.
+        - **regex** - optional regular expression removing a trailing suffix from metadata values, ending in `$`, e.g. `" [0-9]{4}$"`, which is the default for `by="source"`
+        - **scoreFunctions** - dict of R (!) measure functions (see `KorAPConnection.dispersionQuery`)
+        - **exactFrequencies** - by default, a sample fetched with `KorAPQuery.fetchSamplePages` or completely fetched metadata are reused; otherwise exact counts per group are requested. True requests exact counts even after a fetch; False permits sampling metadata.
+        - **searchHitsSampleLimit** - maximum metadata sample size (default = 20000)
+        - **seed** - seed for the random selection of result pages (default = 7)
+        - **verbose**
+        - **cacheAs** - path to an RDS file to keep the result in (see `KorAPConnection.collocationAnalysis`)
+
+        Returns:
+            DataFrame as described in `KorAPConnection.dispersionQuery`
+
+        Details:
+            Use a metadata-only query, which is the default of `KorAPConnection.corpusQuery`.
+            To compare the dispersion of several queries, use `KorAPConnection.dispersionQuery`.
+
+        Example:
+            ```
+            $ q = KorAPConnection().corpusQuery("Mückenplage", vc="pubDate in 2022")
+            $ df = q.dispersionAnalysis(by="region")
+            $ df[["query", "partition", "totalResults", "nParts", "DP", "DPnorm", "range"]]
+                     query partition  totalResults  nParts        DP    DPnorm  range
+            1  Mückenplage    region          18.0       7  0.062939  0.062939    3.0
+            ```
+        """
+        return _dispersion_to_pandas(_call_keeping_r_result(KorAPClient.dispersionAnalysis, self, by, **kwargs))
