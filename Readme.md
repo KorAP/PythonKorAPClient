@@ -52,7 +52,7 @@ or install RKorAPClient from the package installation menu entry.
 
 #### 3. Install the Python package
 
-PythonKorAPClient requires Python 3.10 or newer.
+PythonKorAPClient requires Python 3.11 or newer.
 
 On Linux and macOS:
 

@@ -3,6 +3,7 @@
 ## 1.5.1
 
 - Updates recommended RKorAPClient version to 1.5.1
+- Requires Python >= 3.11 (support for Python 3.10, which reached its end of life, dropped; Python 3.15 added)
 - Added **experimental metadata-based dispersion analysis**, to compare how evenly hits are distributed across sources, countries, years or other metadata, accounting for the sizes of the corpus parts:
   - `KorAPQuery.dispersionAnalysis()` calculates dispersion measures (DP, DPnorm, Juilland's D, Carroll's D2, Rosengren's S, range) for a query
   - `KorAPConnection.dispersionQuery()` does the same for one or more query strings, optionally across custom corpus parts
